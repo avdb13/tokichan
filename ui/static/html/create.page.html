@@ -1,0 +1,63 @@
+{% block body %}
+<form action="/{{ board }}/" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+  <input type="hidden" value="{{ parent }}" name="parent"/>
+  <table>
+    <tr>
+      <td>
+        <label>Name:</label>
+      </td>
+      <td>
+     {%let name %}
+     {% if input.name.len() != 0 %}
+       {% let name = input.name %}
+     {% else %}
+       {% let name = "Anonymous" %}
+     {% endif %}
+        <input type="text" value="{{ name }}" name="name" size="24" maxlength="100"/>
+      </td>
+    </tr>
+       <td>
+         <label>Email:</label>
+       </td>
+       <td>
+        <input type="text" value="{{ input.email }}" name="email" size="24" maxlength="100"/>
+      </td>
+    <tr>
+      <td>
+        <label>Subject:</label>
+      </td>
+      <td>
+        <input type="text" value="{{ input.subject }}" name="subject" size="24" maxlength="100"/>
+      </td>
+    </tr>
+      <td>
+        <label>Body:</label>
+      </td>
+      <td>
+        {#<label class="error">{{.}}</label>#}
+        {#<textarea name="body" rows="5" cols="32">{{.Get "body"}}</textarea>#}
+      </td>
+    <tr>
+      <td>
+        <label>Picture:</label>
+      </td>
+      <td>
+        <input type="file" name="file1"/>
+        <input type="file" name="file2"/>
+        <input type="file" name="file3"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="submit" value="Post"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="captcha" size="24" maxlength="6"/>
+        <img src="/.toki/captcha" alt="/.toki/captcha"/>
+      </td>
+    </tr>
+  </table>
+</form>
+{% endblock %}

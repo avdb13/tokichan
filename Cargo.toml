@@ -1,0 +1,24 @@
+[package]
+name = "tokichan-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+askama = { version = "0.11.1", features = ["with-axum"] }
+askama_axum = "0.1.0"
+axum = { version = "0.5.13", features = ["axum-macros", "macros"] }
+axum-core = "0.2.7"
+axum-extra = { version = "0.3.6", features = ["spa", "axum-macros"] }
+axum-macros = "0.2.3"
+chrono = "0.4.20"
+fake = "2.5.0"
+help = "0.0.0"
+serde = { version = "1.0.142", features = ["serde_derive"] }
+serde_derive = "1.0.142"
+sqlx = { version = "0.6.1", features = ["runtime-tokio-native-tls", "postgres", "offline", "chrono"] }
+tokio = { version = "1.20.1", features = ["full"] }
+toml = "0.5.9"
+tracing = "0.1.36"
+tracing-subscriber = { version = "0.3.15", features = ["tracing", "env-filter"] }

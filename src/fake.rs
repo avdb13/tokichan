@@ -12,8 +12,9 @@ use fake::{
     locales::EN,
 };
 
-pub async fn populate_db(client: &PgConnection) {
+pub async fn populate_db(conn: Mutex<&mut PgConnection>) {
     for i in 0..100 {
+        let mut conn = conn.lock().unwrap();
         let post = Post {
             id: Default::default(),
             parent: Default::default(),
@@ -36,6 +37,6 @@ pub async fn populate_db(client: &PgConnection) {
         post.fields.email,
         post.fields.subject,
         post.fields.body
-       ).execute().await.expect("Oops");
+       ).execute(client).await.expect("Oops");
     }
 }

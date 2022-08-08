@@ -1,11 +1,13 @@
 use askama::Template;
 use serde::Deserialize;
-use axum::response::{
-    Html,
-    Response,
-    IntoResponse,
+use axum::{
+    http::StatusCode,
+        response::{
+        Html,
+        Response,
+        IntoResponse,
+    }
 };
-use http::StatusCode;
 
 #[derive(Template)]
 #[template(path = "home.page.html")]
@@ -16,7 +18,7 @@ pub struct HomeTemplate {
 	pub boards:             Vec<String>,
 	pub captcha:            String,
     pub flash:              bool,
-    pub authenticated_user: bool,
+    pub authenticated:      bool,
 
 	// Form *forms.Form
 	// Post *data.Post
@@ -31,11 +33,12 @@ pub struct PostTemplate {
 // AuthenticatedUser: data.User,
 	// CSRFToken:         String,
 	pub current_year:       u32,
-	pub board:              String,
+    pub parent:             u32,
+    board:                  String,
     pub boards:             Vec<String> ,
 	pub captcha:            String,
     pub flash:              bool,
-    pub authenticated_user: bool,
+    pub authenticated:      bool,
     pub input:              Input,
 
 	// pub form: Form,

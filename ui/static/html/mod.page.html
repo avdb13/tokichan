@@ -1,0 +1,102 @@
+{{template "base" .}}
+
+{{define "title"}}Moderation panel{{end}}
+
+{{define "body"}}
+<form action="/mod/signup" method="POST" novalidate>
+  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+  {{with .Form}}
+    <div>
+      <label>Username:</label>
+      {{with .Errors.Get "name"}}
+        <label class="error">{{.}}</label>
+      {{end}}
+      <input type="text" value="{{.Get "name"}}" name="name"/>
+    </div>
+    <div>
+      <label>Password:</label>
+      {{with .Errors.Get "password"}}
+        <label class="error">{{.}}</label>
+      {{end}}
+      <input type="password" name="password"/>
+    </div>
+    <div>
+      <label>Role:</label>
+      <select name="role" id="role">
+        <option value="volunteer">Volunteer</option>
+        <option value="moderator">Moderator</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div>
+      <input type="submit" value="signup"/>
+    </div>
+  {{end}}
+</form>
+
+<br></br>
+
+
+<form action="/mod/delete" method="POST" accept-charset="utf-8">
+  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+    <div>
+      <label>Thread</label>
+      <input type="number" name="delete_thread" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Delete"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/mod/restore" method="POST" accept-charset="utf-8">
+  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+    <div>
+      <label>Thread</label>
+      <input type="number" name="restore_thread" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Restore"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/mod/alter" method="POST" accept-charset="utf-8">
+  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+    <div>
+      <label>Thread</label>
+      <input type="number" name="alter_thread" id=""/>
+      <label>Board</label>
+    </div>
+    <div>
+      <input type="checkbox" name="" id=""/>
+      <label>Unlink</label>
+      <input type="checkbox" name="" id=""/>
+      <label>Sticky</label>
+      <input type="checkbox" name="" id=""/>
+      <label>Autosage</label>
+    </div>
+    <div>
+      <input type="submit" value="Alter"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/board/create" method="POST" accept-charset="utf-8">
+  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+    <div>
+      <label>Board</label>
+      <input type="text" name="name" id=""/>
+      <input type="text" name="title" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Alter"/>
+    </div>
+</form>
+
+<br></br>
+
+{{end}}

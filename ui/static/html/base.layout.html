@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+    {% block title %}
+      {{ title }} - Tokichan
+    {% endblock %}
+    </title>
+    <link rel="stylesheet" href="/static/css/main.css" type="text/css">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body>
+    <div id="header">
+    <header>
+      <h1><a href="/">Tokichan</a></h1>
+    </header>
+    <nav>
+      <div class="nav-public">
+        <h2><a href="/">Home</a></h2>
+        <h2><a href="/.toki/recent">Recent</a></h2>
+        {% for board in boards %}
+          <h2><a href="/{{ board }}">{{ board }}</a></h2>
+        {% endfor %}
+      </div>
+      <div>
+        {% if authenticated %}
+          <h2><a href="/mod/home">Mod</a></h2>
+          <form action="/mod/logout" method="POST" accept-charset="utf-8">
+            {#<button>Logout {{.AuthenticatedUser.Name}}</button>#}
+          </form>
+        {% else %}
+          <h2><a href="/mod/login">Mod</a></h2>
+        {% endif %}
+      </div>
+    </nav>
+    </div>
+    <section>
+      {% if flash %}
+        <div class="flash">
+        </div>
+      {% endif %}
+    </section>
+    {% block body %}{% endblock %}
+  </body>
+</html>

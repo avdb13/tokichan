@@ -1,0 +1,30 @@
+{{template "base" .}}
+
+{{define "title"}}
+Home
+{{end}}
+
+{{define "body"}}
+<h2>Recent Threads</h2>
+  {{if .Posts}}
+  <table>
+    <tr id="bar">
+      <th>Op</th>
+      <th>Subject</th>
+      <th>Date</th>
+    </tr>
+    {{range .Posts}}
+    <tr>
+      <td id="op"><a href="{{if .Fields.Email}}mailto:{{.Fields.Email}}{{end}}">{{.Fields.OP}}</a></td>
+      <td><a href="/{{.Board}}/{{.ID}}" target="">{{.Fields.Subject}}</a></td>
+      <td id="date">{{humanDate .Created}}</td>
+    </tr>
+    {{end}}
+  </table>
+  {{else}}
+  <p>There's nothing to see here yet!</p>
+  {{end}}
+<footer>
+  {{.CurrentYear}} - Tokichan(tm)
+</footer>
+{{end}}

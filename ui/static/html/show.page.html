@@ -1,0 +1,61 @@
+{{template "base" .}}
+
+{{define "title"}}Thread #{{.Post.ID}}{{end}}
+
+{{define "parent"}}{{.Post.ID}}{{end}}
+
+{{define "body"}}
+
+{{template "create" .}}
+
+{{with .Post}}
+  <div class="thread">
+    <div class="title">
+      <h2>
+        <span id="subject">{{.Fields.Subject}}</span>
+        <span id="op">
+          {{if .Fields.Email}}
+            <a href="mailto:{{.Fields.Email}}">{{.OP}}</a>
+          {{else}}
+            {{.Fields.OP}}
+          {{end}}
+        </span>
+        <span id="date">{{humanDate .Created}}</span>
+      </h2>
+    </div>
+    <div class="metadata">
+    </div>
+    {{range .Files}}
+      <img src="/static/img/{{.}}" alt="/static/img/{{.}}" height="120"/>
+    {{end}}
+    <div class="body">
+      <p>{{.Fields.Body}}</p>
+    </div>
+  </div>
+    {{range .Children}}
+    <div class="thread">
+      <div class="title">
+        <h2>
+          <span id="subject">{{.Fields.Subject}}</span>
+          <span id="op">
+            {{if .Fields.Email}}
+              <a href="mailto:{{.Fields.Email}}">{{.OP}}</a>
+            {{else}}
+              {{.Fields.OP}}
+            {{end}}
+          </span>
+          <span id="date">{{humanDate .Created}}</span>
+        </h2>
+      </div>
+      <div class="metadata">
+      </div>
+      {{range .Files}}
+        <img src="/static/img/{{.}}" alt="/static/img/{{.}}" height="120"/>
+      {{end}}
+      <div class="body">
+        <p>{{.Fields.Body}}</p>
+      </div>
+    </div>
+    {{end}}
+  {{end}}
+{{end}}

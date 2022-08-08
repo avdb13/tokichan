@@ -10,8 +10,7 @@ use std::net::SocketAddr;
 use crate::routes::init_app;
 use crate::psql::open_db;
 use crate::fake::populate_db;
-use crate::data::Post;
-use std::fs;
+use std::{fs, env};
 use serde_derive::Deserialize;
 
 pub mod routes;
@@ -51,6 +50,9 @@ async fn main() {
         config.psql.password,
         config.psql.address,
     );
+    env::set_var("DATABASE_URL", &dsn);
+    let x = env::var("DATABASE_URL").unwrap();
+    dbg!(x);
 
 
     let client = open_db(dsn.as_str()).await.expect("failed to connect to database");

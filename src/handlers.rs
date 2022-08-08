@@ -14,7 +14,7 @@ pub async fn get_root() -> impl IntoResponse {
         boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
         captcha: "foobar".to_owned(),
         flash: false,
-        authenticated_user: false,
+        authenticated: false,
     })
 }
 
@@ -25,11 +25,12 @@ pub async fn get_board() -> Html<String> {
 pub async fn get_post() -> impl IntoResponse {
     HtmlTemplate(PostTemplate {
         current_year: 2022u32,
+        parent: 0,
         board: "b".to_owned(),
         boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
         captcha: "foobar".to_owned(),
         flash: false,
-        authenticated_user: false,
+        authenticated: false,
         input: Input::default(),
     })
 }
