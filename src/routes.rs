@@ -16,8 +16,8 @@ pub fn routes(app: Extension<Arc<App>>) -> Router {
             get(handlers::get_board).post(handlers::create_post),
         )
         .route("/:board/:id", get(handlers::get_post))
-        .layer(TraceLayer::new_for_http())
         .layer(Extension(app))
+        .layer(TraceLayer::new_for_http())
         .fallback(handlers::fallback.into_service())
 
     // .route("/.toki/captcha", get(handlers::get_post))
