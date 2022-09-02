@@ -5,7 +5,7 @@ use crate::routes::routes;
 use models::PoolModel;
 use std::fs;
 use std::net::SocketAddr;
-use std::sync::Mutex;
+use std::sync::Arc;
 use toml::{de::Error, from_str};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -49,9 +49,10 @@ async fn main() {
     let pool = open_db(dsn.as_str())
         .await
         .expect("failed to connect to database");
-    populate_db(pool).await;
+    populate_db(pool.clone()).await;
+
     let app = Arc::new(App {
-        models: PoolModel { pool },
+        models: PoolModel { pool: pool.clone() },
         config,
     });
     let router = routes(Extension(app));

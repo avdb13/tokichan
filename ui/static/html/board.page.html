@@ -15,15 +15,15 @@
     {% for post in posts %}
     <tr>
       <td id="op">
-      {% if let Some(email) = post.email %}
-        <a href="mailto:{{ email }}">{{ post.op }}</a>
+      {% if post.email.is_some() %}
+        <a href="mailto:{{ post.email.as_ref().unwrap() }}">{{ post.op }}</a>
       {% else %}
         {{ post.op }}
       {% endif %}
       </td>
-      {% if let Some(subject) = post.subject %}
+      {% if post.subject.is_some() %}
         <td>
-          <a href="/{{ post.board }}/{{ post.id }}" target="">{{ post.subject }}</a>
+          <a href="/{{ post.board }}/{{ post.id }}" target="">{{ post.subject.as_ref().unwrap() }}</a>
         </td>
       {% endif %}
       <td id="date">{{ current_year }}</td>
