@@ -1,42 +1,43 @@
+use crate::data::Post;
 use chrono::Utc;
-use crate::data::{Post, Fields};
-use sqlx::postgres::PgConnection;
 use fake::{
-    Fake,
-    faker::{
-        lorem::raw::Paragraph,
-        name::raw::Name,
-        lorem::raw::Sentence,
-        internet::raw::FreeEmail,
-    },
+    faker::{internet::raw::FreeEmail, lorem::raw::Sentence, lorem::raw::Words, name::raw::Name},
     locales::EN,
+    Fake,
 };
+use sqlx::postgres::PgPool;
 
-pub async fn populate_db(conn: Mutex<&mut PgConnection>) {
+pub async fn populate_db(pool: PgPool) {
     for i in 0..100 {
-        let mut conn = conn.lock().unwrap();
         let post = Post {
-            id: Default::default(),
-            parent: Default::default(),
+            id: i as i32,
+            parent: None,
             board: "b".to_string(),
             created: Utc::now(),
-            children: vec![],
+            children: None,
 
-            fields: Fields {
-                op: Name(EN).fake(),
-                email: FreeEmail(EN).fake(),
-                body: Sentence(EN, 0..3).fake(),
-                subject: Paragraph(EN, 0..3).fake(),
-                files: vec![],
-            },
+            op: Name(EN).fake(),
+            email: Some(FreeEmail(EN).fake()),
+            body: Some(Sentence(EN, 1..5).fake()),
+            subject: Some(Words(EN, 1..5).fake::<Vec<String>>().join(" ")),
+            files: None,
         };
-       sqlx::query!(r#"
-           INSERT INTO posts (op, email, subject, body) VALUES ($1, $2, $3, $4)
-        "#,
-        post.fields.op,
-        post.fields.email,
-        post.fields.subject,
-        post.fields.body
-       ).execute(client).await.expect("Oops");
+
+        sqlx::query!(
+            "
+           INSERT INTO posts (id, board, parent, op, email, body, subject)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ",
+            post.id,
+            post.board,
+            post.parent,
+            post.op,
+            post.email,
+            post.subject,
+            post.body
+        )
+        .execute(&pool)
+        .await
+        .expect("Oops");
     }
 }

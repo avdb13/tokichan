@@ -1,15 +1,5 @@
-use std::sync::Mutex;
-use sqlx::{
-    Error,
-    Connection,
-    postgres::{
-        PgConnection,
-    },
-};
+use sqlx::{postgres::PgPool, Error};
 
-pub async fn open_db(dsn: &str) -> Result<Mutex<PgConnection>, Error> {
-    match PgConnection::connect(dsn).await {
-        Ok(conn) => Mutex::new(conn),
-        Err(e) => e,
-    }
+pub async fn open_db(dsn: &str) -> Result<PgPool, Error> {
+    PgPool::connect(dsn).await
 }

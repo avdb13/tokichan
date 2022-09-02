@@ -1,36 +1,39 @@
-{{template "base" .}}
+{% extends "base.layout.html" %}
 
-{{define "title"}}Home{{end}}
-{{define "parent"}}0{{end}}
+{% block title %}{{ board }}{% endblock %}
 
-{{define "body"}}
-
-{{template "create" .}}
+{% block body %}
 
 <h2>Recent Threads</h2>
-  {{if .Posts}}
+  {% if posts.len() == 0 %}
   <table>
     <tr id="bar">
       <th>Op</th>
       <th>Subject</th>
       <th>Date</th>
     </tr>
-    {{range .Posts}}
+    {% for post in posts %}
     <tr>
       <td id="op">
-      {{if .Fields.Email}}
-        <a href="mailto:{{.Fields.Email}}">{{.Fields.OP}}{{else}}{{.Fields.OP}}</a>
-      {{end}}
+      {% if let Some(email) = post.email %}
+        <a href="mailto:{{ email }}">{{ post.op }}</a>
+      {% else %}
+        {{ post.op }}
+      {% endif %}
       </td>
-      <td><a href="/{{.Board}}/{{.ID}}" target="">{{.Fields.Subject}}</a></td>
-      <td id="date">{{humanDate .Created}}</td>
+      {% if let Some(subject) = post.subject %}
+        <td>
+          <a href="/{{ post.board }}/{{ post.id }}" target="">{{ post.subject }}</a>
+        </td>
+      {% endif %}
+      <td id="date">{{ current_year }}</td>
     </tr>
-    {{end}}
+    {% endfor %}
   </table>
-  {{else}}
+  {% else %}
   <p>There's nothing to see here yet!</p>
-  {{end}}
+  {% endif %}
 <footer>
-  {{.CurrentYear}} - Tokichan(tm)
+  {{ current_year }} - Tokichan(tm)
 </footer>
-{{end}}
+{% endblock %}

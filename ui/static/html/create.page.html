@@ -9,9 +9,9 @@
       <td>
      {%let name %}
      {% if input.name.len() != 0 %}
-       {% let name = input.name %}
+       {% let name = input.name.clone() %}
      {% else %}
-       {% let name = "Anonymous" %}
+       {% let name = "Anonymous".to_string().clone() %}
      {% endif %}
         <input type="text" value="{{ name }}" name="name" size="24" maxlength="100"/>
       </td>

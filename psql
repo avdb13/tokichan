@@ -1,0 +1,1 @@
+migrations/20220808072747_posts.up.sql postgres://tokichan:foobar@localhost/tokichan

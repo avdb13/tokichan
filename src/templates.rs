@@ -1,54 +1,56 @@
+use crate::data::Post;
 use askama::Template;
-use serde::Deserialize;
 use axum::{
     http::StatusCode,
-        response::{
-        Html,
-        Response,
-        IntoResponse,
-    }
+    response::{Html, IntoResponse, Response},
 };
+use serde::Deserialize;
+use sqlx::FromRow;
 
-#[derive(Template)]
+#[derive(Template, FromRow)]
 #[template(path = "home.page.html")]
 pub struct HomeTemplate {
-// AuthenticatedUser: data.User,
-	// CSRFToken:         String,
-	pub current_year:       u32,
-	pub boards:             Vec<String>,
-	pub captcha:            String,
-    pub flash:              bool,
-    pub authenticated:      bool,
+    // AuthenticatedUser: data.User,
+    // CSRFToken:         String,
+    pub current_year: i32,
+    pub boards: Vec<String>,
+    pub captcha: String,
+    pub flash: bool,
+    pub authenticated: bool,
+    // Form *forms.Form
+    // Post *data.Post
 
-	// Form *forms.Form
-	// Post *data.Post
-
-	// Posts  *[]data.Post
-	// Boards *[]data.Board
+    // Posts  *[]data.Post
+    // Boards *[]data.Board
 }
 
-#[derive(Template)]
+#[derive(Template, FromRow)]
 #[template(path = "create.page.html")]
 pub struct PostTemplate {
-// AuthenticatedUser: data.User,
-	// CSRFToken:         String,
-	pub current_year:       u32,
-    pub parent:             u32,
-    board:                  String,
-    pub boards:             Vec<String> ,
-	pub captcha:            String,
-    pub flash:              bool,
-    pub authenticated:      bool,
-    pub input:              Input,
-
-	// pub form: Form,
-    // pub post: Post,
-
-	// Posts  *[]data.Post
-	// Boards *[]data.Board
+    pub current_year: i32,
+    pub parent: i32,
+    pub board: String,
+    pub boards: Vec<String>,
+    pub captcha: String,
+    pub flash: bool,
+    pub authenticated: bool,
+    pub input: Input,
 }
 
-#[derive(Deserialize, Default, Debug)]
+#[derive(Template, FromRow)]
+#[template(path = "board.page.html")]
+pub struct BoardTemplate {
+    pub current_year: i32,
+    pub board: String,
+    pub posts: Vec<Post>,
+    pub boards: Vec<String>,
+    pub captcha: String,
+    pub flash: bool,
+    pub authenticated: bool,
+    pub input: Input,
+}
+
+#[derive(Deserialize, Default, Debug, FromRow)]
 pub struct Input {
     name: String,
     email: String,

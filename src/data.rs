@@ -1,27 +1,44 @@
+// i32 is used over u32 because this is a requirement by `sqlx` despite the types never being
+// negative
 use chrono::{DateTime, Utc};
 
-pub struct Post {
-    pub id: u32,
-    pub parent: u32,
-    pub board: String,
-    pub children: Vec<u32>,
-    pub created: DateTime::<Utc>,
-    pub fields: Fields,
+impl Default for Post {
+    fn default() -> Self {
+        Post {
+            id: 0,
+            parent: None,
+            board: "/b/".to_string(),
+            children: None,
+            files: None,
+            created: Utc::now(),
+
+            op: "Me".to_string(),
+            email: None,
+            subject: None,
+            body: None,
+        }
+    }
 }
 
-#[derive(Default)]
-pub struct Fields {
+pub struct Post {
+    pub id: i32,
+    pub parent: Option<i32>,
+    pub board: String,
+    pub created: DateTime<Utc>,
+
     pub op: String,
-    pub email: String,
-    pub subject: String,
-    pub body: String,
-    pub files: Vec<String>,
+    pub email: Option<String>,
+    pub subject: Option<String>,
+    pub body: Option<String>,
+
+    pub children: Option<Vec<i32>>,
+    pub files: Option<Vec<String>>,
 }
 
 pub struct User {
-    pub id: u32,
+    pub id: i32,
     pub name: String,
-    pub role: u8,
+    pub role: i8,
     pub password: String,
-    pub created: DateTime::<Utc>,
+    pub created: DateTime<Utc>,
 }
