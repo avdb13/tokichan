@@ -1,16 +1,21 @@
-use axum::{
-    response::Html,
-    extract::Form,
-    http::{Uri, StatusCode},
-};
+use std::sync::Arc;
+
 use crate::templates::*;
-use axum_macros::debug_handler;
+use crate::App;
+use axum::extract::Path;
+use axum::Extension;
+use axum::{
+    extract::Form,
+    http::{StatusCode, Uri},
+    response::Html,
+};
 use axum_core::response::IntoResponse;
+use axum_macros::debug_handler;
 
 #[debug_handler]
 pub async fn get_root() -> impl IntoResponse {
     HtmlTemplate(HomeTemplate {
-        current_year: 2022u32,
+        current_year: 2022i32,
         boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
         captcha: "foobar".to_owned(),
         flash: false,
@@ -18,14 +23,25 @@ pub async fn get_root() -> impl IntoResponse {
     })
 }
 
-pub async fn get_board() -> Html<String> {
-    unimplemented!()
+pub async fn get_board(app: Extension<Arc<App>>, Path(board): Path<String>) -> impl IntoResponse {
+    let posts = app.models.board(board).await;
+
+    HtmlTemplate(BoardTemplate {
+        posts,
+        current_year: 2022i32,
+        board: "b".to_owned(),
+        boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
+        captcha: "foobar".to_owned(),
+        flash: false,
+        authenticated: false,
+        input: Input::default(),
+    })
 }
 
 pub async fn get_post() -> impl IntoResponse {
     HtmlTemplate(PostTemplate {
-        current_year: 2022u32,
-        parent: 0,
+        current_year: 2022i32,
+        parent: 0i32,
         board: "b".to_owned(),
         boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
         captcha: "foobar".to_owned(),

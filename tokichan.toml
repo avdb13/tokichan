@@ -1,0 +1,7 @@
+[psql]
+username = "tokichan"
+password = "foobar"
+address  = "localhost"
+
+[dev]
+rename_migrations = true
