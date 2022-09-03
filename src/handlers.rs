@@ -23,7 +23,10 @@ pub async fn get_root() -> impl IntoResponse {
     })
 }
 
-pub async fn get_board(app: Extension<Arc<App>>, Path(board): Path<String>) -> impl IntoResponse {
+pub async fn get_board(
+    Extension(app): Extension<Arc<App>>,
+    Path(board): Path<String>,
+) -> impl IntoResponse {
     let posts = app.models.board(board).await;
 
     HtmlTemplate(BoardTemplate {
