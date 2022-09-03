@@ -18,8 +18,6 @@ pub mod psql;
 pub mod routes;
 pub mod templates;
 
-use axum::Extension;
-
 pub struct App {
     models: PoolModel,
     config: Config,
@@ -55,7 +53,7 @@ async fn main() {
         models: PoolModel { pool: pool.clone() },
         config,
     });
-    let router = routes(Extension(app));
+    let router = routes(app);
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 
     tracing::debug!("listening on {}", addr);
