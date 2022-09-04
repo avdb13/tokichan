@@ -1,5 +1,3 @@
-use std::time;
-
 // i32 is used over u32 because this is a requirement by `sqlx` despite the types never being
 // negative
 use chrono::{DateTime, Utc};

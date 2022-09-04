@@ -50,6 +50,21 @@ pub struct BoardTemplate {
     pub input: Input,
 }
 
+#[derive(Template, FromRow)]
+#[template(path = "thread.page.html")]
+pub struct ThreadTemplate {
+    pub current_year: i32,
+    pub parent: i32,
+    pub board: String,
+    pub boards: Vec<String>,
+    pub post: Post,
+    pub children: Option<Vec<Post>>,
+    pub captcha: String,
+    pub flash: bool,
+    pub authenticated: bool,
+    pub input: Input,
+}
+
 #[derive(Deserialize, Default, Debug, FromRow)]
 pub struct Input {
     name: String,

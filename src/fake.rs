@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use crate::data::Post;
 use chrono::Utc;
 use fake::{
