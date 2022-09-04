@@ -10,9 +10,7 @@ use axum::{
     response::Html,
 };
 use axum_core::response::IntoResponse;
-use axum_macros::debug_handler;
 
-#[debug_handler]
 pub async fn get_root() -> impl IntoResponse {
     HtmlTemplate(HomeTemplate {
         current_year: 2022i32,
@@ -41,12 +39,21 @@ pub async fn get_board(
     })
 }
 
-pub async fn get_post() -> impl IntoResponse {
-    HtmlTemplate(PostTemplate {
+pub async fn get_post(
+    Extension(app): Extension<Arc<App>>,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    let id = id.parse().expect("Oops");
+    let post = app.models.post(id).await;
+    let children = app.models.children(id).await;
+
+    HtmlTemplate(ThreadTemplate {
         current_year: 2022i32,
         parent: 0i32,
         board: "b".to_owned(),
         boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
+        post,
+        children,
         captcha: "foobar".to_owned(),
         flash: false,
         authenticated: false,

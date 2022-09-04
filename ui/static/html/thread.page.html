@@ -1,0 +1,72 @@
+{% extends "base.layout.html" %}
+
+{% block title %}
+    Thread #{{  post.id  }}
+{% endblock %}
+
+{% block body %}
+  <div class="thread">
+    <div class="title">
+      <h2>
+        {% if post.subject.is_some() %}
+          <span id="subject">
+            {{ post.subject }}
+          </span>
+        {% endif %}
+        <span id="op">
+        {% if post.email.is_some() %}
+          <a href="mailto:{{ post.email.as_ref().unwrap() }}">{{ post.op }}</a>
+        {% else %}
+          {{ post.op }}
+        {% endif %}
+        </span>
+        <span id="date">
+          {{ post.created }}
+        </span>
+      </h2>
+    </div>
+    <div class="metadata">
+    </div>
+    {% if post.files.is_some() %}
+      {% for file in post.files %}
+        <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+      {% endfor %}
+    {% endif %}
+    <div class="body">
+      <p>{{ post.body }}</p>
+    </div>
+  </div>
+      {% if children.is_some() %}
+        {% for child in children %}
+        <div class="thread">
+          <div class="title">
+            <h2>
+              {% if child.subject.is_some() %}
+                <span id="subject">
+                  {{ child.subject }}
+                </span>
+              {% endif %}
+              <span id="op">
+                {% if child.email.is_some() %}
+                  <a href="mailto:{{ child.email.as_ref().unwrap() }}">{{ child.op }}</a>
+                {% else %}
+                  {{ child.op }}
+                {% endif %}
+              </span>
+              <span id="date">{{ child.created }}</span>
+            </h2>
+          </div>
+          <div class="metadata">
+          </div>
+          {% if child.files.is_some() %}
+            {% for file in child.files %}
+              <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+            {% endfor %}
+          {% endif %}
+            <div class="body">
+              <p>{{ child.body }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+{% endblock %}
