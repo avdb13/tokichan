@@ -12,6 +12,7 @@ axum = { version = "0.5.13", features = ["axum-macros", "macros"] }
 axum-core = "0.2.7"
 axum-extra = { version = "0.3.6", features = ["spa", "axum-macros"] }
 axum-macros = "0.2.3"
+captcha = "0.0.9"
 chrono = "0.4.20"
 fake = "2.5.0"
 help = "0.0.0"
