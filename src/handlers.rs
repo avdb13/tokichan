@@ -41,7 +41,7 @@ pub async fn get_board(
 
 pub async fn get_post(
     Extension(app): Extension<Arc<App>>,
-    Path(id): Path<String>,
+    Path((_board, id)): Path<(String, String)>,
 ) -> impl IntoResponse {
     let id = id.parse().expect("Oops");
     let post = app.models.post(id).await;
@@ -61,9 +61,7 @@ pub async fn get_post(
     })
 }
 
-pub async fn create_post(Form(input): Form<Input>) {
-    dbg!(&input);
-}
+pub async fn create_post(Extension(app): Extension<Arc<App>>, Form(input): Form<Input>) {}
 
 pub async fn recent() -> Html<String> {
     unimplemented!()

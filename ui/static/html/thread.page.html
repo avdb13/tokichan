@@ -10,7 +10,7 @@
       <h2>
         {% if post.subject.is_some() %}
           <span id="subject">
-            {{ post.subject }}
+            {{ post.subject.as_ref().unwrap() }}
           </span>
         {% endif %}
         <span id="op">
@@ -25,25 +25,27 @@
         </span>
       </h2>
     </div>
-    <div class="metadata">
+      {% if post.files.is_some() %}
+        <div class="metadata">
+        {% for file in post.files.as_ref().unwrap() %}
+          <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+        {% endfor %}
+        </div>
+      {% endif %}
+      {% if post.body.is_some() %}
+      <div class="body">
+        <p>{{ post.body.as_ref().unwrap() }}</p>
+      </div>
+      {% endif %}
     </div>
-    {% if post.files.is_some() %}
-      {% for file in post.files %}
-        <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
-      {% endfor %}
-    {% endif %}
-    <div class="body">
-      <p>{{ post.body }}</p>
-    </div>
-  </div>
       {% if children.is_some() %}
-        {% for child in children %}
+        {% for child in children.as_ref().unwrap() %}
         <div class="thread">
           <div class="title">
             <h2>
               {% if child.subject.is_some() %}
                 <span id="subject">
-                  {{ child.subject }}
+                  {{ child.subject.as_ref().unwrap() }}
                 </span>
               {% endif %}
               <span id="op">
@@ -56,16 +58,18 @@
               <span id="date">{{ child.created }}</span>
             </h2>
           </div>
-          <div class="metadata">
-          </div>
           {% if child.files.is_some() %}
-            {% for file in child.files %}
+            <div class="metadata">
+            {% for file in child.files.as_ref().unwrap() %}
               <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+            </div>
             {% endfor %}
           {% endif %}
+          {% if child.body.is_some() %}
             <div class="body">
-              <p>{{ child.body }}</p>
+              <p>{{ child.body.as_ref().unwrap() }}</p>
           </div>
+          {% endif %}
         </div>
       {% endfor %}
     {% endif %}

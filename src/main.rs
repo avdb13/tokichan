@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::fake::populate_db;
+use crate::form::Validator;
 use crate::psql::open_db;
 use crate::routes::routes;
 use models::PoolModel;
@@ -12,6 +13,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 pub mod config;
 pub mod data;
 pub mod fake;
+pub mod form;
 pub mod handlers;
 pub mod models;
 pub mod psql;
