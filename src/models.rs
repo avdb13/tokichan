@@ -1,4 +1,5 @@
-use crate::data::*;
+use crate::{data::*, templates::Input};
+use axum::response::Redirect;
 use sqlx::PgPool;
 
 pub struct PoolModel {
@@ -18,7 +19,7 @@ impl PoolModel {
         .expect("Oops")
     }
 
-    pub async fn board(&self, board: String) -> Vec<Post> {
+    pub async fn get_board(&self, board: String) -> Vec<Post> {
         sqlx::query_as!(
             Post,
             r#"
@@ -31,7 +32,7 @@ impl PoolModel {
         .expect("Oops")
     }
 
-    pub async fn post(&self, id: i32) -> Post {
+    pub async fn get_post(&self, id: i32) -> Post {
         sqlx::query_as!(
                 Post,
                 r#"
@@ -60,5 +61,34 @@ impl PoolModel {
             0 => None,
             _ => Some(children),
         }
+    }
+
+    pub async fn create_post(&self, input: Input) {
+        let rec = sqlx::query!(
+            r#"
+                     INSERT INTO posts(board, parent, op, email, body, subject, files)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)
+                     RETURNING id
+                "#,
+            input.board,
+            input.parent,
+            input.op,
+            input.email,
+            input.body,
+            input.subject,
+            input.files.as_deref(),
+        )
+        .fetch_one(&self.pool)
+        .await
+        .expect("Oops");
+
+        match input.parent {
+            Some(p) => {
+                Redirect::to(format!("/{}/{}", input.board, p).as_str());
+            }
+            None => {
+                Redirect::to(format!("/{}/", input.board).as_str());
+            }
+        };
     }
 }

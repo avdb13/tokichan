@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::templates::*;
 use crate::App;
 use axum::extract::Path;
+use axum::response::Redirect;
 use axum::Extension;
 use axum::{
     extract::Form,
@@ -25,7 +26,7 @@ pub async fn get_board(
     Extension(app): Extension<Arc<App>>,
     Path(board): Path<String>,
 ) -> impl IntoResponse {
-    let posts = app.models.board(board).await;
+    let posts = app.models.get_board(board).await;
 
     HtmlTemplate(BoardTemplate {
         posts,
@@ -44,7 +45,7 @@ pub async fn get_post(
     Path((_board, id)): Path<(String, String)>,
 ) -> impl IntoResponse {
     let id = id.parse().expect("Oops");
-    let post = app.models.post(id).await;
+    let post = app.models.get_post(id).await;
     let children = app.models.children(id).await;
 
     HtmlTemplate(ThreadTemplate {
@@ -61,7 +62,11 @@ pub async fn get_post(
     })
 }
 
-pub async fn create_post(Extension(app): Extension<Arc<App>>, Form(input): Form<Input>) {}
+pub async fn create_post(Extension(app): Extension<Arc<App>>, Form(input): Form<Input>) {
+    let rec = app.models.create_post(input).await;
+
+    // Redirect::permanent();
+}
 
 pub async fn recent() -> Html<String> {
     unimplemented!()
