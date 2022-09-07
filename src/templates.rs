@@ -1,4 +1,4 @@
-use crate::data::Post;
+use crate::data::{Board, Post};
 use askama::Template;
 use axum::{
     http::StatusCode,
@@ -13,7 +13,7 @@ pub struct HomeTemplate {
     // AuthenticatedUser: data.User,
     // CSRFToken:         String,
     pub current_year: i32,
-    pub boards: Vec<String>,
+    pub boards: Vec<Board>,
     pub captcha: String,
     pub flash: bool,
     pub authenticated: bool,
@@ -30,7 +30,7 @@ pub struct BoardTemplate {
     pub current_year: i32,
     pub board: String,
     pub posts: Vec<Post>,
-    pub boards: Vec<String>,
+    pub boards: Vec<Board>,
     pub captcha: String,
     pub flash: bool,
     pub authenticated: bool,
@@ -41,9 +41,9 @@ pub struct BoardTemplate {
 #[template(path = "thread.page.html")]
 pub struct ThreadTemplate {
     pub current_year: i32,
-    pub parent: i32,
+    pub id: i32,
     pub board: String,
-    pub boards: Vec<String>,
+    pub boards: Vec<Board>,
     pub post: Post,
     pub children: Option<Vec<Post>>,
     pub captcha: String,

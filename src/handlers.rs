@@ -12,10 +12,10 @@ use axum::{
 };
 use axum_core::response::IntoResponse;
 
-pub async fn get_root() -> impl IntoResponse {
+pub async fn get_root(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
     HtmlTemplate(HomeTemplate {
         current_year: 2022i32,
-        boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
+        boards: app.boards.clone(),
         captcha: "foobar".to_owned(),
         flash: false,
         authenticated: false,
@@ -32,7 +32,7 @@ pub async fn get_board(
         posts,
         current_year: 2022i32,
         board: "b".to_owned(),
-        boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
+        boards: app.boards.clone(),
         captcha: "foobar".to_owned(),
         flash: false,
         authenticated: false,
@@ -42,17 +42,17 @@ pub async fn get_board(
 
 pub async fn get_post(
     Extension(app): Extension<Arc<App>>,
-    Path((_board, id)): Path<(String, String)>,
+    Path((board, id)): Path<(String, String)>,
 ) -> impl IntoResponse {
     let id = id.parse().expect("Oops");
     let post = app.models.get_post(id).await;
     let children = app.models.children(id).await;
 
     HtmlTemplate(ThreadTemplate {
+        id,
         current_year: 2022i32,
-        parent: 0i32,
-        board: "b".to_owned(),
-        boards: vec!["b".to_owned(), "l".to_owned(), "g".to_owned()],
+        boards: app.boards.clone(),
+        board,
         post,
         children,
         captcha: "foobar".to_owned(),

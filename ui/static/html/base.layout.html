@@ -20,7 +20,7 @@
         <h2><a href="/">Home</a></h2>
         <h2><a href="/.toki/recent">Recent</a></h2>
         {% for board in boards %}
-          <h2><a href="/{{ board }}">{{ board }}</a></h2>
+        <h2><a href="/{{ board.name }}">{{ board.name }} - {{ board.title }}</a></h2>
         {% endfor %}
       </div>
       <div>

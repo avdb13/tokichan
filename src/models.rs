@@ -81,4 +81,16 @@ impl PoolModel {
         .await
         .expect("Oops");
     }
+
+    pub async fn get_boards(&self) -> Vec<Board> {
+        sqlx::query_as!(
+            Board,
+            r#"
+                 SELECT name, title FROM boards
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await
+        .expect("Oops")
+    }
 }

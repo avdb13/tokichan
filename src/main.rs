@@ -1,8 +1,8 @@
 use crate::config::Config;
 use crate::fake::populate_db;
-use crate::form::Validator;
 use crate::psql::open_db;
 use crate::routes::routes;
+use data::Board;
 use models::PoolModel;
 use std::fs;
 use std::net::SocketAddr;
@@ -23,6 +23,8 @@ pub mod templates;
 pub struct App {
     models: PoolModel,
     config: Config,
+    // support hot-reloading boards in the future
+    boards: Vec<Board>,
 }
 
 fn init_app() {}
@@ -51,10 +53,14 @@ async fn main() {
         .expect("failed to connect to database");
     populate_db(pool.clone()).await;
 
-    let app = Arc::new(App {
-        models: PoolModel { pool: pool.clone() },
+    let models = PoolModel { pool: pool.clone() };
+    let boards = models.get_boards().await;
+    let mut app = Arc::new(App {
+        models,
         config,
+        boards,
     });
+
     let router = routes(app);
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 
