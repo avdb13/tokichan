@@ -20,6 +20,12 @@ impl Default for Post {
     }
 }
 
+#[derive(Clone)]
+pub struct Board {
+    pub name: String,
+    pub title: String,
+}
+
 pub struct Post {
     pub id: i32,
     pub parent: Option<i32>,
