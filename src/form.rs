@@ -1,6 +1,8 @@
+use anyhow::Error;
 use std::collections::HashMap;
 
-enum Field {
+#[derive(Eq, Hash, PartialEq)]
+pub enum Field {
     Op,
     Email,
     Subject,
@@ -8,14 +10,18 @@ enum Field {
     Files,
 }
 
-pub struct Validator<T, E> {
-    errors: HashMap<Field, Vec<Result<T, E>>>,
+pub struct Validator {
+    errors: HashMap<Field, Error>,
 }
 
-impl Validator<T, E> {
+impl Validator {
     pub async fn valid(&self) -> bool {
-        self.errors.iter().all(|r| r.is_ok())
+        self.errors.values().all(|r| r.is::<Error>())
     }
 
-    pub async fn 
+    pub async fn check(&mut self, ok: bool, k: Field, v: Error) {
+        if !ok {
+            self.errors.insert(k, v);
+        }
+    }
 }

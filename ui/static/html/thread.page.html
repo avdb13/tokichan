@@ -1,12 +1,24 @@
 {% extends "base.layout.html" %}
 
+{% block hidden %}
+  <input type="hidden" value="{{ post.id }}" name="parent"/>
+  <input type="hidden" value="{{ board }}" name="board"/>
+{% endblock %}
+
 {% block title %}
     Thread #{{  post.id  }}
 {% endblock %}
 
 {% block body %}
   <div class="thread">
+
+    <div class="create">
+      {% include "create.partial.html" %}
+    </div>
     <div class="title">
+      <span>
+        {{ post.id }}
+      </span>
       <h2>
         {% if post.subject.is_some() %}
           <span id="subject">
@@ -43,6 +55,9 @@
         <div class="thread">
           <div class="title">
             <h2>
+            <span>
+              {{ child.id }}
+            </span>
               {% if child.subject.is_some() %}
                 <span id="subject">
                   {{ child.subject.as_ref().unwrap() }}

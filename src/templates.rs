@@ -25,19 +25,6 @@ pub struct HomeTemplate {
 }
 
 #[derive(Template, FromRow)]
-#[template(path = "create.page.html")]
-pub struct PostTemplate {
-    pub current_year: i32,
-    pub parent: i32,
-    pub board: String,
-    pub boards: Vec<String>,
-    pub captcha: String,
-    pub flash: bool,
-    pub authenticated: bool,
-    pub input: Input,
-}
-
-#[derive(Template, FromRow)]
 #[template(path = "board.page.html")]
 pub struct BoardTemplate {
     pub current_year: i32,
@@ -67,12 +54,14 @@ pub struct ThreadTemplate {
 
 #[derive(Deserialize, Default, Debug, FromRow)]
 pub struct Input {
-    name: String,
-    email: String,
-    subject: String,
-    body: String,
-    pictures: [String; 3],
-    captcha: String,
+    pub board: String,
+    pub op: String,
+    pub email: String,
+    pub subject: String,
+    pub body: String,
+    pub parent: Option<i32>,
+    pub files: Option<Vec<String>>,
+    pub captcha: String,
 }
 
 pub struct HtmlTemplate<T>(pub T);

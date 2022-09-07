@@ -1,19 +1,18 @@
-{% block body %}
-<form action="/{{ board }}/" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
-  <input type="hidden" value="{{ parent }}" name="parent"/>
+<form action="/{{ board }}/" method="POST" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
+  {% block hidden %}{% endblock %}
   <table>
     <tr>
       <td>
         <label>Name:</label>
       </td>
       <td>
-     {%let name %}
-     {% if input.name.len() != 0 %}
-       {% let name = input.name.clone() %}
+     {%let op %}
+     {% if input.op.len() != 0 %}
+       {% let op = input.op.clone() %}
      {% else %}
-       {% let name = "Anonymous".to_string().clone() %}
+       {% let op = "Anonymous".to_string().clone() %}
      {% endif %}
-        <input type="text" value="{{ name }}" name="name" size="24" maxlength="100"/>
+        <input type="text" value="{{ op }}" name="op" size="24" maxlength="100"/>
       </td>
     </tr>
        <td>
@@ -35,7 +34,7 @@
       </td>
       <td>
         {#<label class="error">{{.}}</label>#}
-        {#<textarea name="body" rows="5" cols="32">{{.Get "body"}}</textarea>#}
+        <textarea name="body" rows="5" cols="32">{{ input.body }}</textarea>
       </td>
     <tr>
       <td>
@@ -60,4 +59,3 @@
     </tr>
   </table>
 </form>
-{% endblock %}

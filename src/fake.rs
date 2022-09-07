@@ -25,10 +25,9 @@ pub async fn populate_db(pool: PgPool) {
 
         sqlx::query!(
             "
-           INSERT INTO posts (id, board, parent, op, email, body, subject)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           INSERT INTO posts (board, parent, op, email, body, subject)
+           VALUES ($1, $2, $3, $4, $5, $6)
         ",
-            post.id,
             post.board,
             post.parent,
             post.op,
