@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{handlers, App};
-use axum::{handler::Handler, routing::get, Extension, Router};
+use axum::{handler::Handler, response::Redirect, routing::get, Extension, Router};
 use axum_extra::routing::SpaRouter;
 use tower_http::trace::TraceLayer;
 

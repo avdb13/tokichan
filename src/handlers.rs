@@ -62,10 +62,22 @@ pub async fn get_post(
     })
 }
 
-pub async fn create_post(Extension(app): Extension<Arc<App>>, Form(input): Form<Input>) {
-    let rec = app.models.create_post(input).await;
+pub async fn create_post(
+    Extension(app): Extension<Arc<App>>,
+    Form(input): Form<Input>,
+) -> Redirect {
+    app.models.create_post(&input).await;
 
-    // Redirect::permanent();
+    match input.parent {
+        Some(p) => {
+            dbg!(&format!("/{}/{}", input.board, p).as_str());
+            Redirect::to(format!("/{}/{}", input.board, p).as_str())
+        }
+        None => {
+            dbg!(&format!("/{}", input.board).as_str());
+            Redirect::to(format!("/{}", input.board).as_str())
+        }
+    }
 }
 
 pub async fn recent() -> Html<String> {
