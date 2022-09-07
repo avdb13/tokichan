@@ -63,12 +63,11 @@ impl PoolModel {
         }
     }
 
-    pub async fn create_post(&self, input: Input) {
-        let rec = sqlx::query!(
+    pub async fn create_post(&self, input: &Input) {
+        sqlx::query!(
             r#"
                      INSERT INTO posts(board, parent, op, email, body, subject, files)
                      VALUES ($1, $2, $3, $4, $5, $6, $7)
-                     RETURNING id
                 "#,
             input.board,
             input.parent,
@@ -78,17 +77,8 @@ impl PoolModel {
             input.subject,
             input.files.as_deref(),
         )
-        .fetch_one(&self.pool)
+        .execute(&self.pool)
         .await
         .expect("Oops");
-
-        match input.parent {
-            Some(p) => {
-                Redirect::to(format!("/{}/{}", input.board, p).as_str());
-            }
-            None => {
-                Redirect::to(format!("/{}/", input.board).as_str());
-            }
-        };
     }
 }
