@@ -1,6 +1,11 @@
+use std::sync::{Arc, Mutex};
+
 use crate::{data::*, templates::Input};
-use axum::response::Redirect;
+use anyhow::Result;
+use axum::extract::Multipart;
+use ripemd::{Digest, Ripemd160};
 use sqlx::PgPool;
+use tokio::{fs::File, io::AsyncWriteExt};
 
 pub struct PoolModel {
     pub pool: PgPool,
@@ -92,5 +97,23 @@ impl PoolModel {
         .fetch_all(&self.pool)
         .await
         .expect("Oops")
+    }
+
+    // TODO: make `save_files` run asynchronously
+    pub async fn save_files(&self, mut multipart: Multipart) -> Result<()> {
+        while let Some(field) = multipart.next_field().await? {
+            let mut hasher = Ripemd160::new();
+            let name = field.name().unwrap().to_string();
+            let data = field.bytes().await?;
+
+            hasher.update(name);
+            let result = hasher.finalize();
+            let mut file = File::create(format!("{:x?}.{}", result, "png")).await?;
+
+            file.write_all(&data).await?;
+            file.flush().await;
+        }
+
+        Ok(())
     }
 }

@@ -10,6 +10,7 @@ use std::sync::Arc;
 use toml::{de::Error, from_str};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+pub mod captcha;
 pub mod config;
 pub mod data;
 pub mod fake;
