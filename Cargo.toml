@@ -17,14 +17,20 @@ captcha = "0.0.9"
 chrono = "0.4.20"
 crypto = { version = "0.4.0", features = ["cipher", "digest", "std"] }
 fake = "2.5.0"
+futures = "0.3.24"
 help = "0.0.0"
 hex = "0.4.3"
+http-body = "0.4.5"
+mime-sniffer = "0.1.2"
 photon-rs = "0.3.1"
+rand = "0.8.5"
+regex = "1.6.0"
 ripemd = "0.1.1"
 serde = { version = "1.0.142", features = ["serde_derive"] }
 serde_derive = "1.0.142"
 sqlx = { version = "0.6.1", features = ["runtime-tokio-native-tls", "postgres", "offline", "chrono"] }
 text-to-png = "0.2.0"
+thiserror = "1.0.35"
 tokio = { version = "1.20.1", features = ["full", "tracing"] }
 toml = "0.5.9"
 tower-http = { version = "0.3.4", features = ["full"] }

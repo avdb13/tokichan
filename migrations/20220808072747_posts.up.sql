@@ -9,7 +9,6 @@ CREATE TABLE posts (
     created timestamp(0) with time zone DEFAULT now() NOT NULL,
 
     children text [],
-    files text [],
 
     CONSTRAINT posts_body_check CHECK (length(body) < 32768),
     CONSTRAINT posts_email_check CHECK (length(email) < 64),

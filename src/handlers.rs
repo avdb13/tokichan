@@ -2,12 +2,11 @@ use std::sync::Arc;
 
 use crate::templates::*;
 use crate::App;
+use axum::extract::Multipart;
 use axum::extract::Path;
-use axum::extract::{ContentLengthLimit, Multipart};
 use axum::response::Redirect;
 use axum::Extension;
 use axum::{
-    extract::Form,
     http::{StatusCode, Uri},
     response::Html,
 };
@@ -63,24 +62,22 @@ pub async fn get_post(
     })
 }
 
-pub async fn create_post(
-    Extension(app): Extension<Arc<App>>,
-    ContentLengthLimit(multipart): ContentLengthLimit<Multipart, { 10 * 1024 * 1024 }>,
-    Form(input): Form<Input>,
-) -> Redirect {
-    app.models.create_post(&input).await;
-    app.models.save_files(multipart).await;
+pub async fn create_post(Extension(app): Extension<Arc<App>>, multipart: Multipart) -> Redirect {
+    let input: Input = Default::default();
+    // app.models.create_post(&input).await;
+    // app.models.save_files(multipart, input).await;
 
-    match input.parent {
-        Some(p) => {
-            dbg!(&format!("/{}/{}", input.board, p).as_str());
-            Redirect::to(format!("/{}/{}", input.board, p).as_str())
-        }
-        None => {
-            dbg!(&format!("/{}", input.board).as_str());
-            Redirect::to(format!("/{}", input.board).as_str())
-        }
-    }
+    // match input.parent {
+    //     Some(p) => {
+    //         dbg!(&format!("/{}/{}", input.board, p).as_str());
+    //         Redirect::to(format!("/{}/{}", input.board, p).as_str())
+    //     }
+    //     None => {
+    //         dbg!(&format!("/{}", input.board).as_str());
+    //         Redirect::to(format!("/{}", input.board).as_str())
+    //     }
+    // }
+    Redirect::to("/")
 }
 
 pub async fn recent() -> Html<String> {

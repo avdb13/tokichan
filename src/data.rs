@@ -8,7 +8,6 @@ impl Default for Post {
             id: 0,
             parent: None,
             board: "/b/".to_string(),
-            children: None,
             files: None,
             created: Utc::now(),
 
@@ -37,7 +36,6 @@ pub struct Post {
     pub subject: Option<String>,
     pub body: Option<String>,
 
-    pub children: Option<Vec<i32>>,
     pub files: Option<Vec<String>>,
 }
 

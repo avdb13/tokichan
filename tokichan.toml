@@ -5,3 +5,7 @@ address  = "localhost"
 
 [dev]
 rename_migrations = true
+
+[security]
+upload_limit = "10MB"
+allowed_mimes = ["image/jpeg", "image/png", "image/webp","application/pdf"]

@@ -60,8 +60,8 @@ pub struct Input {
     pub subject: String,
     pub body: String,
     pub parent: Option<i32>,
-    pub files: Option<Vec<String>>,
     pub captcha: String,
+    pub files: Option<Vec<String>>,
 }
 
 pub struct HtmlTemplate<T>(pub T);

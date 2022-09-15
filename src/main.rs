@@ -16,6 +16,7 @@ pub mod data;
 pub mod fake;
 pub mod form;
 pub mod handlers;
+pub mod helpers;
 pub mod models;
 pub mod psql;
 pub mod routes;

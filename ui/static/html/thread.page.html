@@ -40,7 +40,7 @@
       {% if post.files.is_some() %}
         <div class="metadata">
         {% for file in post.files.as_ref().unwrap() %}
-          <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+          <img src="/static/images/{{ file }}" alt="/static/images/{{ file }}" height="120"/>
         {% endfor %}
         </div>
       {% endif %}
@@ -76,7 +76,7 @@
           {% if child.files.is_some() %}
             <div class="metadata">
             {% for file in child.files.as_ref().unwrap() %}
-              <img src="/static/img/{{ file }}" alt="/static/img/{{ file }}" height="120"/>
+              <img src="/static/images/{{ file }}" alt="/static/images/{{ file }}" height="120"/>
             </div>
             {% endfor %}
           {% endif %}
