@@ -1,36 +1,28 @@
-{{template "base" .}}
+{% extends "base.layout.html" %}
 
-{{define "title"}}Signup{{end}}
+{% block title %}Register{% endblock %}
 
-{{define "body"}}
-<form action="/mod/signup" method="POST" novalidate>
-<input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
-  {{with .Form}}
+{% block body %}
+<form action="/.toki/signup" method="POST" novalidate>
     <div>
       <label>Username:</label>
-      {{with .Errors.Get "name"}}
-        <label class="error">{{.}}</label>
-      {{end}}
-      <input type="text" value="{{.Get "name"}}" name="name"/>
+      <input type="text" value="{{ credentials.username }}" name="username"/>
     </div>
     <div>
       <label>Password:</label>
-      {{with .Errors.Get "password"}}
-        <label class="error">{{.}}</label>
-      {{end}}
       <input type="password" name="password"/>
     </div>
     <div>
       <label>Role:</label>
       <select name="role" id="role">
-        <option value="volunteer">Volunteer</option>
-        <option value="moderator">Moderator</option>
-        <option value="admin">Admin</option>
+        <option value="User">User</option>
+        <option value="Volunteer">Volunteer</option>
+        <option value="Moderator">Moderator</option>
+        <option value="Admin">Admin</option>
       </select>
     </div>
     <div>
       <input type="submit" value="signup"/>
     </div>
-  {{end}}
 </form>
-{{end}}
+{% endblock %}

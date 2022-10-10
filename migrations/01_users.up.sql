@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id integer NOT NULL,
+    id serial NOT NULL,
     name text NOT NULL,
     role text NOT NULL,
     password text NOT NULL,
