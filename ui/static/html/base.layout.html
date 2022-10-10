@@ -19,12 +19,12 @@
       <div class="nav-public">
         <h2><a href="/">Home</a></h2>
         <h2><a href="/.toki/recent">Recent</a></h2>
-        {% for board in boards %}
+        {% for board in base.boards %}
         <h2><a href="/{{ board.name }}">{{ board.name }} - {{ board.title }}</a></h2>
         {% endfor %}
       </div>
       <div>
-        {% if authenticated %}
+        {% if base.authenticated %}
           <h2><a href="/mod/home">Mod</a></h2>
           <form action="/mod/logout" method="POST" accept-charset="utf-8">
             {#<button>Logout {{.AuthenticatedUser.Name}}</button>#}
@@ -36,11 +36,19 @@
     </nav>
     </div>
     <section>
-      {% if flash %}
+      {% if base.flash.is_some() %}
         <div class="flash">
+        {% let flash = base.flash.as_ref().unwrap() %}
+        {% if flash.is_err() %}
+        {% endif %}
+        {% if flash.is_ok() %}
+        {% endif %}
         </div>
       {% endif %}
     </section>
     {% block body %}{% endblock %}
+    <footer>
+      {{ base.current_year }} - Tokichan(tm)
+    </footer>
   </body>
 </html>

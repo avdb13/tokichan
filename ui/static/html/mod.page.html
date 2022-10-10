@@ -1,44 +1,34 @@
-{{template "base" .}}
+{% extends "base.layout.html" %}
 
-{{define "title"}}Moderation panel{{end}}
+{% block title %}Moderation{% endblock %}
 
-{{define "body"}}
-<form action="/mod/signup" method="POST" novalidate>
-  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
-  {{with .Form}}
+{% block body %}
+<form action="/.toki/signup" method="POST" novalidate>
     <div>
       <label>Username:</label>
-      {{with .Errors.Get "name"}}
-        <label class="error">{{.}}</label>
-      {{end}}
-      <input type="text" value="{{.Get "name"}}" name="name"/>
+      <input type="text" value="{{ credentials.username }}" name="name"/>
     </div>
     <div>
       <label>Password:</label>
-      {{with .Errors.Get "password"}}
-        <label class="error">{{.}}</label>
-      {{end}}
       <input type="password" name="password"/>
     </div>
     <div>
       <label>Role:</label>
       <select name="role" id="role">
-        <option value="volunteer">Volunteer</option>
-        <option value="moderator">Moderator</option>
-        <option value="admin">Admin</option>
+        <option value="Volunteer">Volunteer</option>
+        <option value="Moderator">Moderator</option>
+        <option value="Admin">Admin</option>
       </select>
     </div>
     <div>
       <input type="submit" value="signup"/>
     </div>
-  {{end}}
 </form>
 
 <br></br>
 
 
-<form action="/mod/delete" method="POST" accept-charset="utf-8">
-  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+<form action="/toki./delete" method="POST" accept-charset="utf-8">
     <div>
       <label>Thread</label>
       <input type="number" name="delete_thread" id=""/>
@@ -50,8 +40,7 @@
 
 <br></br>
 
-<form action="/mod/restore" method="POST" accept-charset="utf-8">
-  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+<form action="/.toki/restore" method="POST" accept-charset="utf-8">
     <div>
       <label>Thread</label>
       <input type="number" name="restore_thread" id=""/>
@@ -63,11 +52,10 @@
 
 <br></br>
 
-<form action="/mod/alter" method="POST" accept-charset="utf-8">
-  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+<form action="/.toki/edit" method="POST" accept-charset="utf-8">
     <div>
       <label>Thread</label>
-      <input type="number" name="alter_thread" id=""/>
+      <input type="number" name="edit_thread" id=""/>
       <label>Board</label>
     </div>
     <div>
@@ -79,14 +67,13 @@
       <label>Autosage</label>
     </div>
     <div>
-      <input type="submit" value="Alter"/>
+      <input type="submit" value="Edit"/>
     </div>
 </form>
 
 <br></br>
 
-<form action="/board/create" method="POST" accept-charset="utf-8">
-  <input type="hidden" value="{{.CSRFToken}}" name="csrf_token"/>
+<form action="/.toki/board/create" method="POST" accept-charset="utf-8">
     <div>
       <label>Board</label>
       <input type="text" name="name" id=""/>
@@ -99,4 +86,18 @@
 
 <br></br>
 
-{{end}}
+<form action="/.toki/board/delete" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Board</label>
+      <input type="text" name="name" id=""/>
+      <input type="text" name="title" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Delete"/>
+    </div>
+</form>
+
+<br></br>
+
+{% endblock %}
+

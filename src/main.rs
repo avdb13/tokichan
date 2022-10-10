@@ -1,12 +1,12 @@
 use crate::config::Config;
-use crate::fake::populate_db;
 use crate::psql::open_db;
 use crate::routes::routes;
+use anyhow::Result;
 use data::Board;
 use models::PoolModel;
-use std::fs;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use std::{fs, sync::Mutex};
 use toml::{de::Error, from_str};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -20,6 +20,7 @@ pub mod helpers;
 pub mod models;
 pub mod psql;
 pub mod routes;
+pub mod sessions;
 pub mod templates;
 
 pub struct App {
@@ -32,7 +33,7 @@ pub struct App {
 fn init_app() {}
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     // start tracing
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
@@ -53,11 +54,12 @@ async fn main() {
     let pool = open_db(dsn.as_str())
         .await
         .expect("failed to connect to database");
-    populate_db(pool.clone()).await;
+    // populate_db(pool.clone()).await;
 
     let models = PoolModel { pool: pool.clone() };
     let boards = models.get_boards().await;
-    let mut app = Arc::new(App {
+
+    let app = Arc::new(App {
         models,
         config,
         boards,
@@ -70,8 +72,9 @@ async fn main() {
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
 
 async fn read_config() -> Result<Config, Error> {

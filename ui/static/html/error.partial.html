@@ -1,0 +1,5 @@
+{% block error %}
+  {% if error.is_some() %}
+    <label class="error">{{ error.as_ref().unwrap() }}</label>
+  {% endif %}
+{% endblock %}

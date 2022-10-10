@@ -1,6 +1,6 @@
 CREATE TABLE posts (
     id integer NOT NULL,
-    parent integer DEFAULT 0 NOT NULL,
+    parent integer,
     board text NOT NULL,
     op text DEFAULT 'Anonymous'::text NOT NULL,
     email text,
@@ -8,7 +8,7 @@ CREATE TABLE posts (
     body text,
     created timestamp(0) with time zone DEFAULT now() NOT NULL,
 
-    children text [],
+    files text [],
 
     CONSTRAINT posts_body_check CHECK (length(body) < 32768),
     CONSTRAINT posts_email_check CHECK (length(email) < 64),

@@ -1,5 +1,6 @@
 <form action="/{{ board }}/" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
   {% block hidden %}{% endblock %}
+  {# include "error.partial.html" #}
   <table>
     <tr>
       <td>
@@ -33,7 +34,6 @@
         <label>Body:</label>
       </td>
       <td>
-        {#<label class="error">{{.}}</label>#}
         <textarea name="body" rows="5" cols="32">{{ input.body }}</textarea>
       </td>
     <tr>

@@ -1,4 +1,6 @@
 /target
+/ui/static/images/*
+ui/static/images/*
 
 
 # Added by cargo
