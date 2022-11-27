@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::data::Credentials;
-use crate::templates::*;
+use super::data::Credentials;
+use super::templates::*;
 use crate::App;
 use axum::debug_handler;
 use axum::extract::Multipart;
@@ -9,12 +9,12 @@ use axum::extract::Path;
 use axum::response::Redirect;
 use axum::Extension;
 use axum::Form;
-use axum::{
-    http::{StatusCode, Uri},
-    response::Html,
-};
+use axum::{http::Uri, response::Html};
 use axum_core::response::IntoResponse;
+use axum_sessions::extractors::ReadableSession;
 use axum_sessions::extractors::WritableSession;
+use chrono::DateTime;
+use chrono::Utc;
 
 pub async fn get_root(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
     HtmlTemplate(HomeTemplate {
@@ -28,7 +28,13 @@ pub async fn get_root(Extension(app): Extension<Arc<App>>) -> impl IntoResponse 
     })
 }
 
-pub async fn get_mod(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
+pub async fn get_mod(
+    Extension(app): Extension<Arc<App>>,
+    session: ReadableSession,
+) -> impl IntoResponse {
+    if session.get::<DateTime<Utc>>("mikoto").is_none() {
+        dbg!("logged out!");
+    };
     HtmlTemplate(ModTemplate {
         credentials: Credentials {
             username: "".to_owned(),
@@ -168,6 +174,15 @@ pub async fn login(
     session: WritableSession,
 ) -> impl IntoResponse {
     app.models.login(credentials, session).await
+}
+
+#[debug_handler]
+pub async fn logout(
+    Extension(app): Extension<Arc<App>>,
+    // Form(credentials): Form<Credentials>,
+    session: WritableSession,
+) -> impl IntoResponse {
+    app.models.logout("mikoto".to_owned(), session).await
 }
 
 #[debug_handler]

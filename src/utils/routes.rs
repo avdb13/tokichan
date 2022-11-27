@@ -1,24 +1,17 @@
 use std::sync::Arc;
 
-use crate::{handlers, sessions::authenticate, App};
+use super::handlers;
+use crate::App;
+
 use axum::{
-    body::Body,
-    debug_handler,
-    // extract::DefaultBodyLimit,
     handler::Handler,
     middleware,
     routing::{get, post},
-    Extension,
-    Router,
+    Extension, Router,
 };
-use axum_core::extract::DefaultBodyLimit;
 use axum_extra::routing::SpaRouter;
 use axum_sessions::{async_session::MemoryStore, SessionLayer};
-use http_body::Limited;
-use tower_http::{
-    limit::{RequestBodyLimit, RequestBodyLimitLayer},
-    trace::TraceLayer,
-};
+use tower_http::trace::TraceLayer;
 
 // pub fn routes(app: Arc<App>) -> Router<Limited<Body>> {
 pub fn routes(app: Arc<App>) -> Router {
@@ -32,11 +25,14 @@ pub fn routes(app: Arc<App>) -> Router {
     let hidden = Router::new()
         .route("/login", get(handlers::get_login).post(handlers::login))
         .route("/signup", get(handlers::get_signup).post(handlers::signup))
+        .route("/logout", get(handlers::logout))
+        .route("/mod", get(handlers::get_mod))
         .layer(session_layer)
-        .route_layer(middleware::from_fn(authenticate))
+        // .route_layer(middleware::from_fn(move |req, next| {
+        //     authenticate(req, next, app.session_store)
+        // }))
         .route("/recent", get(handlers::recent))
-        .route("/captcha", get(handlers::captcha))
-        .route("/mod", get(handlers::get_mod));
+        .route("/captcha", get(handlers::captcha));
 
     Router::new()
         .merge(SpaRouter::new("/static", "ui/static"))
@@ -51,7 +47,7 @@ pub fn routes(app: Arc<App>) -> Router {
         //     (app.config.security.validate_upload_limit()).unwrap(),
         // ))
         .layer(Extension(app))
-        .fallback(handlers::not_found.into_service())
+    // .fallback(handlers::not_found.into_service())
 
     // .route("/.toki/captcha", get(handlers::get_post))
 }

@@ -1,7 +1,4 @@
-use std::collections::HashMap;
-
-use crate::data::{Board, Credentials, Post};
-use anyhow::Error;
+use super::data::{Board, Credentials, Post};
 use askama::Template;
 use axum::{
     http::StatusCode,

@@ -1,4 +1,4 @@
-use crate::data::Post;
+use super::data::Post;
 use chrono::Utc;
 use fake::{
     faker::{internet::raw::FreeEmail, lorem::raw::Sentence, lorem::raw::Words, name::raw::Name},
@@ -7,7 +7,7 @@ use fake::{
 };
 use rand::seq::SliceRandom;
 use sqlx::postgres::PgPool;
-use tokio::fs::{read_dir, DirEntry};
+use tokio::fs::read_dir;
 
 pub async fn populate_db(pool: PgPool) {
     let mut files = read_dir("/home/mikoto/Downloads").await.unwrap();

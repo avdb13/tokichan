@@ -1,7 +1,5 @@
-use crate::{
-    data::*,
-    templates::{Input, LoginError},
-};
+use super::data::*;
+use super::templates::{Input, LoginError};
 use anyhow::Result;
 use axum::{extract::Multipart, response::Redirect};
 use axum_sessions::extractors::WritableSession;
@@ -88,6 +86,7 @@ impl PoolModel {
 
     pub async fn logout(&self, username: String, mut session: WritableSession) -> Redirect {
         session.remove(&username);
+        dbg!("logged out!");
         // Inject flash message
         Redirect::to("/")
     }
@@ -120,6 +119,7 @@ impl PoolModel {
 
                 match Pbkdf2.verify_password(credentials.password.as_bytes(), &hash) {
                     Ok(_) => {
+                        dbg!("valid password!");
                         session
                             .insert(
                                 &credentials.username,

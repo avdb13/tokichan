@@ -1,31 +1,26 @@
-use crate::config::Config;
-use crate::psql::open_db;
-use crate::routes::routes;
 use anyhow::Result;
-use data::Board;
-use models::PoolModel;
+use axum_sessions::async_session::MemoryStore;
+use utils::sessions::AuthState;
+
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::{fs, sync::Mutex};
+
 use toml::{de::Error, from_str};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-pub mod captcha;
-pub mod config;
-pub mod data;
-pub mod fake;
-pub mod form;
-pub mod handlers;
-pub mod helpers;
-pub mod models;
-pub mod psql;
-pub mod routes;
-pub mod sessions;
-pub mod templates;
+use utils::config::Config;
+use utils::data::Board;
+use utils::models::PoolModel;
+use utils::psql::open_db;
+use utils::routes::routes;
+
+mod utils;
 
 pub struct App {
     models: PoolModel,
     config: Config,
+    session_store: MemoryStore,
     // support hot-reloading boards in the future
     boards: Vec<Board>,
 }
@@ -58,11 +53,13 @@ async fn main() -> Result<()> {
 
     let models = PoolModel { pool: pool.clone() };
     let boards = models.get_boards().await;
+    let session_store = MemoryStore::new();
 
     let app = Arc::new(App {
         models,
         config,
         boards,
+        session_store,
     });
 
     let router = routes(app);
