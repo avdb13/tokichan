@@ -1,12 +1,18 @@
+use std::sync::Arc;
+
+use crate::App;
+
 use super::data::{Board, Credentials, Post};
 use askama::Template;
 use axum::{
-    http::StatusCode,
+    extract::State,
+    http::{Request, StatusCode},
+    middleware::Next,
     response::{Html, IntoResponse, Response},
 };
+use axum_sessions::extractors::ReadableSession;
 use serde::Deserialize;
 use sqlx::FromRow;
-use struct_field_names_as_array::FieldNamesAsArray;
 use thiserror::Error;
 
 #[non_exhaustive]
@@ -35,7 +41,7 @@ pub struct BaseTemplate {
     pub current_year: u32,
     pub boards: Vec<Board>,
     pub captcha: Option<String>,
-    pub flash: Option<Result<String, String>>,
+    pub flash: Option<String>,
     // user
 }
 
@@ -87,7 +93,13 @@ pub struct ModTemplate {
     pub base: BaseTemplate,
 }
 
-#[derive(FieldNamesAsArray, Deserialize, Default, Debug, FromRow)]
+#[derive(Template, FromRow)]
+#[template(path = "not_found.page.html")]
+pub struct NotFoundTemplate {
+    pub base: BaseTemplate,
+}
+
+#[derive(Deserialize, Default, Debug, FromRow)]
 pub struct Input {
     pub board: String,
     pub op: String,

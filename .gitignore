@@ -1,3 +1,6 @@
+*.png
+*.jpg
+to-delete.txt
 /target
 /ui/static/images/*
 ui/static/images/*

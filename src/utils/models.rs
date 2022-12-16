@@ -91,11 +91,7 @@ impl PoolModel {
         Redirect::to("/")
     }
 
-    pub async fn login(
-        &self,
-        credentials: Credentials,
-        mut session: WritableSession,
-    ) -> Result<Redirect, LoginError> {
+    pub async fn login(&self, credentials: Credentials) -> Result<i32, LoginError> {
         if credentials.username.is_empty() {
             return Err(LoginError::EmptyUsername);
         } else if credentials.password.is_empty() {
@@ -104,7 +100,7 @@ impl PoolModel {
 
         let result = sqlx::query!(
             r#"
-             SELECT password FROM users where name = $1
+             SELECT id, password FROM users where name = $1
         "#,
             credentials.username,
         )
@@ -118,18 +114,7 @@ impl PoolModel {
                 let hash = PasswordHash::new(&record.password).unwrap();
 
                 match Pbkdf2.verify_password(credentials.password.as_bytes(), &hash) {
-                    Ok(_) => {
-                        dbg!("valid password!");
-                        session
-                            .insert(
-                                &credentials.username,
-                                chrono::Utc::now()
-                                    .checked_add_signed(chrono::Duration::hours(1))
-                                    .unwrap(),
-                            )
-                            .unwrap();
-                        Ok(Redirect::to("/.toki/mod"))
-                    }
+                    Ok(_) => Ok(record.id),
                     Err(_) => Err(LoginError::InvalidCredentials),
                 }
             }

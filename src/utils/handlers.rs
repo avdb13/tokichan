@@ -1,3 +1,7 @@
+use anyhow::Result;
+use axum::response::Response;
+use axum::Extension;
+use axum_sessions::extractors::ReadableSession;
 use std::sync::Arc;
 
 use super::data::Credentials;
@@ -6,20 +10,20 @@ use crate::App;
 use axum::debug_handler;
 use axum::extract::Multipart;
 use axum::extract::Path;
+use axum::extract::State;
+use axum::response::IntoResponse;
 use axum::response::Redirect;
-use axum::Extension;
 use axum::Form;
 use axum::{http::Uri, response::Html};
-use axum_core::response::IntoResponse;
-use axum_sessions::extractors::ReadableSession;
 use axum_sessions::extractors::WritableSession;
-use chrono::DateTime;
-use chrono::Utc;
 
-pub async fn get_root(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
+pub async fn get_root(
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<bool>,
+) -> impl IntoResponse {
     HtmlTemplate(HomeTemplate {
         base: BaseTemplate {
-            authenticated: false,
+            authenticated: session,
             current_year: 2022u32,
             boards: app.boards.clone(),
             captcha: Some("foobar".to_owned()),
@@ -28,30 +32,36 @@ pub async fn get_root(Extension(app): Extension<Arc<App>>) -> impl IntoResponse 
     })
 }
 
-pub async fn get_mod(
-    Extension(app): Extension<Arc<App>>,
-    session: ReadableSession,
+pub async fn get_mod(State(app): State<Arc<App>>, Extension(session): Extension<bool>) -> Response {
+    if session {
+        HtmlTemplate(ModTemplate {
+            credentials: Credentials {
+                username: "".to_owned(),
+                password: "".to_owned(),
+                role: None,
+            },
+            base: BaseTemplate {
+                authenticated: session,
+                current_year: 2022u32,
+                boards: app.boards.clone(),
+                captcha: Some("foobar".to_owned()),
+                flash: None,
+            },
+        })
+        .into_response()
+    } else {
+        Redirect::to("/").into_response()
+    }
+}
+
+pub async fn get_login(
+    State(app): State<Arc<App>>,
+    // Extension(session): Extension<bool>,
 ) -> impl IntoResponse {
-    if session.get::<DateTime<Utc>>("mikoto").is_none() {
-        dbg!("logged out!");
-    };
-    HtmlTemplate(ModTemplate {
-        credentials: Credentials {
-            username: "".to_owned(),
-            password: "".to_owned(),
-            role: None,
-        },
-        base: BaseTemplate {
-            authenticated: false,
-            current_year: 2022u32,
-            boards: app.boards.clone(),
-            captcha: Some("foobar".to_owned()),
-            flash: None,
-        },
-    })
-}
-
-pub async fn get_login(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
+    dbg!("hello");
+    // if session {
+    //     Redirect::to("/.toki/mod").into_response()
+    // } else {
     HtmlTemplate(LoginTemplate {
         credentials: Credentials {
             username: "".to_owned(),
@@ -66,9 +76,14 @@ pub async fn get_login(Extension(app): Extension<Arc<App>>) -> impl IntoResponse
             flash: None,
         },
     })
+    .into_response()
+    // }
 }
 
-pub async fn get_signup(Extension(app): Extension<Arc<App>>) -> impl IntoResponse {
+pub async fn get_signup(
+    State(app): State<Arc<App>>,
+    // Extension(session): Extension<bool>,
+) -> impl IntoResponse {
     HtmlTemplate(SignupTemplate {
         credentials: Credentials {
             username: "".to_owned(),
@@ -76,7 +91,7 @@ pub async fn get_signup(Extension(app): Extension<Arc<App>>) -> impl IntoRespons
             role: None,
         },
         base: BaseTemplate {
-            authenticated: false,
+            authenticated: true,
             current_year: 2022u32,
             boards: app.boards.clone(),
             captcha: Some("foobar".to_owned()),
@@ -94,14 +109,15 @@ pub async fn not_found(Path(board): Path<String>) -> impl IntoResponse {
     //     boards: app.boards.clone(),
     //     captcha: "foobar".to_owned(),
     //     flash: false,
-    //     authenticated: false,
+    //     authenticated: session,
     //     input: Input::default(),
     // })
 }
 
 pub async fn get_board(
-    Extension(app): Extension<Arc<App>>,
+    State(app): State<Arc<App>>,
     Path(board): Path<String>,
+    Extension(session): Extension<bool>,
 ) -> impl IntoResponse {
     if !app.boards.iter().any(|x| x.name == board) {
         return not_found(Path(board)).await.into_response();
@@ -110,7 +126,7 @@ pub async fn get_board(
 
     HtmlTemplate(BoardTemplate {
         base: BaseTemplate {
-            authenticated: false,
+            authenticated: session,
             current_year: 2022u32,
             boards: app.boards.clone(),
             captcha: Some("foobar".to_owned()),
@@ -124,8 +140,9 @@ pub async fn get_board(
 }
 
 pub async fn get_post(
-    Extension(app): Extension<Arc<App>>,
+    State(app): State<Arc<App>>,
     Path((board, id)): Path<(String, String)>,
+    Extension(session): Extension<bool>,
 ) -> impl IntoResponse {
     if id.parse::<u32>().is_err() || id.parse::<i32>().is_err() {
         return not_found(Path(id)).await.into_response();
@@ -143,7 +160,7 @@ pub async fn get_post(
 
     HtmlTemplate(ThreadTemplate {
         base: BaseTemplate {
-            authenticated: false,
+            authenticated: session,
             current_year: 2022u32,
             boards: app.boards.clone(),
             captcha: Some("foobar".to_owned()),
@@ -157,9 +174,9 @@ pub async fn get_post(
     .into_response()
 }
 
-#[debug_handler]
 pub async fn signup(
-    Extension(app): Extension<Arc<App>>,
+    State(app): State<Arc<App>>,
+    // Extension(session): Extension<bool>,
     Form(credentials): Form<Credentials>,
 ) -> Redirect {
     dbg!(&credentials);
@@ -169,24 +186,48 @@ pub async fn signup(
 
 #[debug_handler]
 pub async fn login(
-    Extension(app): Extension<Arc<App>>,
+    State(app): State<Arc<App>>,
+    Extension(_session): Extension<bool>,
+    mut session: WritableSession,
     Form(credentials): Form<Credentials>,
-    session: WritableSession,
-) -> impl IntoResponse {
-    app.models.login(credentials, session).await
+) -> Response {
+    dbg!("POST");
+    match app.models.login(credentials).await {
+        Ok(x) => {
+            session.insert("signed_in", true).unwrap();
+            Redirect::to("/.toki/mod").into_response()
+        }
+        Err(e) => HtmlTemplate(LoginTemplate {
+            credentials: Credentials {
+                username: "".to_owned(),
+                password: "".to_owned(),
+                role: None,
+            },
+            base: BaseTemplate {
+                authenticated: false,
+                current_year: 2022u32,
+                boards: app.boards.clone(),
+                captcha: Some("foobar".to_owned()),
+                flash: Some(e.to_string()),
+            },
+        })
+        .into_response(),
+    }
 }
 
-#[debug_handler]
 pub async fn logout(
-    Extension(app): Extension<Arc<App>>,
-    // Form(credentials): Form<Credentials>,
-    session: WritableSession,
+    State(app): State<Arc<App>>,
+    mut session: WritableSession,
 ) -> impl IntoResponse {
-    app.models.logout("mikoto".to_owned(), session).await
+    session.destroy();
+    Redirect::to("/")
 }
 
-#[debug_handler]
-pub async fn create_post(Extension(app): Extension<Arc<App>>, multipart: Multipart) -> Redirect {
+pub async fn create_post(
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<bool>,
+    multipart: Multipart,
+) -> Redirect {
     // let input: Input = Default::default();
     // app.models.create_post(&input).await;
     let result = app.models.parse_fields(multipart).await;

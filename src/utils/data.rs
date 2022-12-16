@@ -1,6 +1,7 @@
 // i32 is used over u32 because this is a requirement by `sqlx` despite the types never being
 // negative
 use anyhow::Result;
+use axum::extract::FromRequestParts;
 use chrono::{DateTime, Utc};
 use pbkdf2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},

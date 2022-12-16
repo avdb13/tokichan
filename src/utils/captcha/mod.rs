@@ -1,6 +1,5 @@
 use anyhow::Result;
 use ripemd::{Digest, Ripemd160};
-use text_to_png::TextRenderer;
 use tokio::{fs::File, io::AsyncWriteExt};
 
 // pub async fn new_text(text: &str) -> Result<&str> {
