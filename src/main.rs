@@ -16,6 +16,8 @@ use utils::models::PoolModel;
 use utils::psql::open_db;
 use utils::routes::routes;
 
+use crate::utils::fake::populate_db;
+
 mod utils;
 
 pub struct App {
@@ -49,7 +51,7 @@ async fn main() -> Result<()> {
     let pool = open_db(dsn.as_str())
         .await
         .expect("failed to connect to database");
-    // populate_db(pool.clone()).await;
+    // populate_db(pool.clone()).await?;
 
     let models = PoolModel { pool: pool.clone() };
     let boards = models.get_boards().await;
@@ -61,7 +63,6 @@ async fn main() -> Result<()> {
     });
 
     let router = routes(app);
-    debug_router!(router);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 

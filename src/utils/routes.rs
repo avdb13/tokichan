@@ -31,7 +31,7 @@ pub fn routes(app: Arc<App>) -> Router {
         .route("/captcha", get(handlers::captcha));
 
     Router::new()
-        .merge(SpaRouter::new("/static", "ui/static"))
+        .merge(SpaRouter::new("/tmp", ".tmp"))
         .route("/", get(handlers::get_root))
         .route("/:board/", get(handlers::get_board))
         .route("/:board/", post(handlers::create_post))

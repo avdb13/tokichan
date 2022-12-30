@@ -25,12 +25,12 @@
       </div>
       <div>
         {% if base.authenticated %}
-          <h2><a href="/.toki/mod/home">Mod</a></h2>
-          <form action="/.toki/mod/logout" method="POST" accept-charset="utf-8">
+          <h2><a href="/.toki/mod">Mod</a></h2>
+          <form action="/.toki/logout" method="POST" accept-charset="utf-8">
             <button>Logout</button>
           </form>
         {% else %}
-          <h2><a href="/mod/login">Mod</a></h2>
+          <h2><a href="/.toki/login">Login</a></h2>
         {% endif %}
       </div>
     </nav>

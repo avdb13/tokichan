@@ -11,6 +11,7 @@ where
     let Extension(session_handle): Extension<SessionHandle> = req.extract_parts().await?;
     let session = session_handle.read().await;
     let payload = session.get::<bool>("signed_in").unwrap_or(false);
+    drop(session);
 
     req.extensions_mut().insert(payload);
     Ok(next.run(req).await)

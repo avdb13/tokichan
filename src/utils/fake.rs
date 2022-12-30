@@ -1,57 +1,43 @@
 use super::data::Post;
+use anyhow::{Error, Result};
 use chrono::Utc;
 use fake::{
     faker::{internet::raw::FreeEmail, lorem::raw::Sentence, lorem::raw::Words, name::raw::Name},
     locales::EN,
     Fake,
 };
-use rand::seq::SliceRandom;
+use futures::future::try_join_all;
+use rand::{seq::SliceRandom, Rng};
 use sqlx::postgres::PgPool;
-use tokio::fs::read_dir;
+use tokio::{
+    fs::{read_dir, File},
+    io::AsyncWriteExt,
+};
 
-pub async fn populate_db(pool: PgPool) {
-    let mut files = read_dir("/home/mikoto/Downloads").await.unwrap();
-    let mut examples: Vec<String> = Vec::new();
+pub async fn populate_db(pool: PgPool) -> Result<()> {
+    let client = gelbooru_api::Client::public();
+    let query = gelbooru_api::posts()
+        .tag("misaka_mikoto")
+        .tag("sfw")
+        .limit(100)
+        .send(&client)
+        .await?;
 
-    while let Some(f) = files.next_entry().await.unwrap() {
-        if [".jpeg", ".png", ".jpg"]
-            .iter()
-            .any(|s| f.path().to_str().unwrap().ends_with(s))
-        {
-            let name = f.file_name().into_string().unwrap();
-            std::fs::copy(
-                f.path().to_str().unwrap(),
-                format!("./ui/static/images/{}", name).as_str(),
-            )
-            .unwrap();
-            examples.push(name);
-        }
-    }
+    let files = query.posts.iter().map(|p| async move {
+        let http_client = reqwest::Client::new();
+
+        let resp = http_client.get(&p.file_url).send().await?;
+        let bytes = resp.bytes().await?;
+
+        let mut file = File::create("./.tmp/".to_owned() + &p.image).await?;
+        file.write_all(&bytes).await?;
+        Ok::<String, Error>(p.image.clone())
+    });
+
+    let files = try_join_all(files).await?;
 
     for i in 0..100 {
-        let files = (0..3)
-            .map(|_| {
-                examples
-                    .choose(&mut rand::thread_rng())
-                    .unwrap()
-                    .to_string()
-            })
-            .collect::<Vec<String>>();
-
-        dbg!(&files);
-
-        let post = Post {
-            id: i as i32,
-            parent: None,
-            board: "b".to_string(),
-            created: Utc::now(),
-
-            op: Name(EN).fake(),
-            email: Some(FreeEmail(EN).fake()),
-            body: Some(Sentence(EN, 1..5).fake()),
-            subject: Some(Words(EN, 1..5).fake::<Vec<String>>().join(" ")),
-            files: Some(files),
-        };
+        let post = create_post(files.clone(), i, files.len()).await;
 
         sqlx::query!(
             "
@@ -69,5 +55,25 @@ pub async fn populate_db(pool: PgPool) {
         .execute(&pool)
         .await
         .expect("Oops");
+    }
+    Ok(())
+}
+
+pub async fn create_post(files: Vec<String>, i: usize, rng: usize) -> Post {
+    let rand = (0..3)
+        .map(|_| files.choose(&mut rand::thread_rng()).unwrap().clone())
+        .collect();
+
+    Post {
+        id: i as i32,
+        parent: None,
+        board: "b".to_string(),
+        created: Utc::now(),
+
+        op: Name(EN).fake(),
+        email: Some(FreeEmail(EN).fake()),
+        body: Some(Sentence(EN, 1..5).fake()),
+        subject: Some(Words(EN, 1..5).fake::<Vec<String>>().join(" ")),
+        files: Some(rand),
     }
 }

@@ -191,7 +191,6 @@ pub async fn login(
     mut session: WritableSession,
     Form(credentials): Form<Credentials>,
 ) -> Response {
-    dbg!("POST");
     match app.models.login(credentials).await {
         Ok(x) => {
             session.insert("signed_in", true).unwrap();
@@ -254,8 +253,21 @@ pub async fn create_post(
     }
 }
 
-pub async fn recent() -> Html<String> {
-    unimplemented!()
+pub async fn recent() -> Response {
+    HtmlTemplate(BoardTemplate {
+        base: BaseTemplate {
+            authenticated: session,
+            current_year: 2022u32,
+            boards: app.boards.clone(),
+            captcha: Some("foobar".to_owned()),
+            flash: None,
+        },
+        board,
+        post,
+        children,
+        input: Input::default(),
+    })
+    .into_response()
 }
 
 pub async fn captcha() -> Html<String> {

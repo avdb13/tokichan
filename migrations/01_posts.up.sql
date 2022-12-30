@@ -1,5 +1,5 @@
 CREATE TABLE posts (
-    id integer NOT NULL,
+    id SERIAL NOT NULL,
     parent integer,
     board text NOT NULL,
     op text DEFAULT 'Anonymous'::text NOT NULL,
