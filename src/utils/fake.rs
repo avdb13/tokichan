@@ -7,19 +7,58 @@ use fake::{
     Fake,
 };
 use futures::future::try_join_all;
-use rand::{seq::SliceRandom, Rng};
+use rand::seq::SliceRandom;
 use sqlx::postgres::PgPool;
-use tokio::{
-    fs::{read_dir, File},
-    io::AsyncWriteExt,
-};
+use tokio::{fs::File, io::AsyncWriteExt};
 
 pub async fn populate_db(pool: PgPool) -> Result<()> {
+    for i in 0..10 {
+        let pool = &pool.clone();
+
+        let files = random_files().await?;
+        let post = create_post(files, None).await;
+
+        insert_post(pool, post).await?;
+
+        let res = (0..5)
+            .map(|_| async move {
+                let files = random_files().await?;
+                let child = create_post(files, Some(i as i32)).await;
+
+                insert_post(pool, child).await
+            })
+            .collect::<Vec<_>>();
+
+        try_join_all(res).await?;
+    }
+    Ok(())
+}
+
+pub async fn create_post(files: Vec<String>, parent: Option<i32>) -> Post {
+    let rand = (0..3)
+        .map(|_| files.choose(&mut rand::thread_rng()).unwrap().clone())
+        .collect();
+
+    Post {
+        id: 0,
+        parent,
+        board: "b".to_string(),
+        created: Utc::now(),
+
+        op: Name(EN).fake(),
+        email: Some(FreeEmail(EN).fake()),
+        body: Some(Sentence(EN, 1..5).fake()),
+        subject: Some(Words(EN, 1..5).fake::<Vec<String>>().join(" ")),
+        files: Some(rand),
+    }
+}
+
+pub async fn random_files() -> Result<Vec<String>> {
     let client = gelbooru_api::Client::public();
     let query = gelbooru_api::posts()
         .tag("misaka_mikoto")
         .tag("sfw")
-        .limit(100)
+        .limit(1)
         .send(&client)
         .await?;
 
@@ -34,46 +73,25 @@ pub async fn populate_db(pool: PgPool) -> Result<()> {
         Ok::<String, Error>(p.image.clone())
     });
 
-    let files = try_join_all(files).await?;
+    try_join_all(files).await
+}
 
-    for i in 0..100 {
-        let post = create_post(files.clone(), i, files.len()).await;
-
-        sqlx::query!(
-            "
+pub async fn insert_post(pool: &PgPool, post: Post) -> Result<()> {
+    sqlx::query!(
+        "
            INSERT INTO posts (board, parent, op, email, body, subject, files)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
         ",
-            post.board,
-            post.parent,
-            post.op,
-            post.email,
-            post.subject,
-            post.body,
-            &post.files.unwrap()[..],
-        )
-        .execute(&pool)
-        .await
-        .expect("Oops");
-    }
+        post.board,
+        post.parent,
+        post.op,
+        post.email,
+        post.subject,
+        post.body,
+        &post.files.unwrap()[..],
+    )
+    .execute(pool)
+    .await?;
+
     Ok(())
-}
-
-pub async fn create_post(files: Vec<String>, i: usize, rng: usize) -> Post {
-    let rand = (0..3)
-        .map(|_| files.choose(&mut rand::thread_rng()).unwrap().clone())
-        .collect();
-
-    Post {
-        id: i as i32,
-        parent: None,
-        board: "b".to_string(),
-        created: Utc::now(),
-
-        op: Name(EN).fake(),
-        email: Some(FreeEmail(EN).fake()),
-        body: Some(Sentence(EN, 1..5).fake()),
-        subject: Some(Words(EN, 1..5).fake::<Vec<String>>().join(" ")),
-        files: Some(rand),
-    }
 }

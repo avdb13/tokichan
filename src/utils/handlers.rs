@@ -1,8 +1,14 @@
 use anyhow::Result;
+use axum::http::Method;
+use axum::http::StatusCode;
 use axum::response::Response;
+use axum::BoxError;
 use axum::Extension;
 use axum_sessions::extractors::ReadableSession;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::time::sleep;
+use tower::timeout::error::Elapsed;
 
 use super::data::Credentials;
 use super::templates::*;
@@ -30,6 +36,28 @@ pub async fn get_root(
             flash: None,
         },
     })
+}
+
+pub async fn get_recent(
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<bool>,
+) -> Response {
+    sleep(Duration::from_secs(3)).await;
+    let posts = app.models.recent().await;
+
+    HtmlTemplate(BoardTemplate {
+        base: BaseTemplate {
+            authenticated: session,
+            current_year: 2022u32,
+            boards: app.boards.clone(),
+            captcha: Some("foobar".to_owned()),
+            flash: None,
+        },
+        board: "recent".to_owned(),
+        posts,
+        input: Input::default(),
+    })
+    .into_response()
 }
 
 pub async fn get_mod(State(app): State<Arc<App>>, Extension(session): Extension<bool>) -> Response {
@@ -253,27 +281,23 @@ pub async fn create_post(
     }
 }
 
-pub async fn recent() -> Response {
-    HtmlTemplate(BoardTemplate {
-        base: BaseTemplate {
-            authenticated: session,
-            current_year: 2022u32,
-            boards: app.boards.clone(),
-            captcha: Some("foobar".to_owned()),
-            flash: None,
-        },
-        board,
-        post,
-        children,
-        input: Input::default(),
-    })
-    .into_response()
-}
-
 pub async fn captcha() -> Html<String> {
     unimplemented!()
 }
 
 pub async fn fallback(path: Uri) -> impl IntoResponse {
     format!("Oops! No {}", path)
+}
+
+pub async fn timeout(method: Method, uri: Uri, error: BoxError) -> impl IntoResponse {
+    match error {
+        x if x.is::<Elapsed>() => (
+            StatusCode::REQUEST_TIMEOUT,
+            format!("request timeout: {method} on {uri}"),
+        ),
+        x => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("internal server error: {method} on {uri}"),
+        ),
+    }
 }

@@ -36,18 +36,6 @@ impl PoolModel {
         Ok(result.iter().map(|x| x.name.clone()).collect::<Vec<_>>())
     }
 
-    pub async fn recent(&self) -> Vec<Post> {
-        sqlx::query_as!(
-            Post,
-            r#"
-             SELECT id, parent, board, created, op, email, body, subject, files FROM posts
-        "#
-        )
-        .fetch_all(&self.pool)
-        .await
-        .expect("Oops")
-    }
-
     pub async fn get_board(&self, board: String) -> Vec<Post> {
         sqlx::query_as!(
             Post,
@@ -55,6 +43,18 @@ impl PoolModel {
              SELECT id, parent, board, created, op, email, body, subject, files FROM posts where board = $1
         "#,
             board,
+        )
+        .fetch_all(&self.pool)
+        .await
+        .expect("Oops")
+    }
+
+    pub async fn recent(&self) -> Vec<Post> {
+        sqlx::query_as!(
+            Post,
+            r#"
+             SELECT id, parent, board, created, op, email, body, subject, files FROM posts ORDER BY created DESC LIMIT 100
+        "#,
         )
         .fetch_all(&self.pool)
         .await
@@ -245,4 +245,17 @@ impl PoolModel {
 
         Ok(hash_ext)
     }
+
+    // pub async fn move_thread(&self, id: u32, op: Option<u32>) -> Result<()> {
+    //     sqlx::query!(
+    //         r#"
+    //                  INSERT INTO users(name, password, role)
+    //                  VALUES ($1, $2, $3)
+    //             "#,
+    //     )
+    //     .execute(&self.pool)
+    //     .await
+    //     .expect("Oops");
+    //     Ok(())
+    // }
 }

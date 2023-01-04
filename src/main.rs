@@ -27,8 +27,6 @@ pub struct App {
     boards: Vec<Board>,
 }
 
-fn init_app() {}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     // start tracing
