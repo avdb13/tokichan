@@ -4,6 +4,7 @@
 target
 ui/static/images/*
 .tmp/*
+..bfg-report/
 
 
 # Added by cargo
