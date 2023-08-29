@@ -1,0 +1,103 @@
+{% extends "base.layout.html" %}
+
+{% block title %}Moderation{% endblock %}
+
+{% block body %}
+<form action="/.toki/signup" method="POST" novalidate>
+    <div>
+      <label>Username:</label>
+      <input type="text" value="{{ credentials.username }}" name="name"/>
+    </div>
+    <div>
+      <label>Password:</label>
+      <input type="password" name="password"/>
+    </div>
+    <div>
+      <label>Role:</label>
+      <select name="role" id="role">
+        <option value="Volunteer">Volunteer</option>
+        <option value="Moderator">Moderator</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+    <div>
+      <input type="submit" value="signup"/>
+    </div>
+</form>
+
+<br></br>
+
+
+<form action="/toki./delete" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Thread</label>
+      <input type="number" name="delete_thread" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Delete"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/.toki/restore" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Thread</label>
+      <input type="number" name="restore_thread" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Restore"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/.toki/edit" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Thread</label>
+      <input type="number" name="edit_thread" id=""/>
+      <label>Board</label>
+    </div>
+    <div>
+      <input type="checkbox" name="" id=""/>
+      <label>Unlink</label>
+      <input type="checkbox" name="" id=""/>
+      <label>Sticky</label>
+      <input type="checkbox" name="" id=""/>
+      <label>Autosage</label>
+    </div>
+    <div>
+      <input type="submit" value="Edit"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/.toki/board/create" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Board</label>
+      <input type="text" name="name" id=""/>
+      <input type="text" name="title" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Alter"/>
+    </div>
+</form>
+
+<br></br>
+
+<form action="/.toki/board/delete" method="POST" accept-charset="utf-8">
+    <div>
+      <label>Board</label>
+      <input type="text" name="name" id=""/>
+      <input type="text" name="title" id=""/>
+    </div>
+    <div>
+      <input type="submit" value="Delete"/>
+    </div>
+</form>
+
+<br></br>
+
+{% endblock %}
+

@@ -1,0 +1,13 @@
+[main]
+file_directory = ".tmp"
+migrations = true
+
+[psql]
+username = "tokichan"
+password = "foobar"
+address  = "localhost"
+
+[security]
+upload_limit = "10MB"
+allowed_mimes = ["image/jpeg", "image/png", "image/webp","application/pdf"]
+boards = [["g", "technology"], ["b", "random"], ["l", "lounge"]]

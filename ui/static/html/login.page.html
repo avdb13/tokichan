@@ -1,0 +1,19 @@
+{% extends "base.layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+<form action="/.toki/login" method="POST" novalidate>
+    <div>
+      <label>Username:</label>
+      <input type="text" value="{{ credentials.username }}" name="username"/>
+    </div>
+    <div>
+      <label>Password:</label>
+      <input type="password" name="password"/>
+    </div>
+    <div>
+      <input type="submit" value="login"/>
+    </div>
+</form>
+{% endblock %}

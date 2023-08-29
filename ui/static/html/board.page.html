@@ -1,0 +1,36 @@
+{% extends "base.layout.html" %}
+
+{% block title %}{{ board }}{% endblock %}
+
+{% block body %}
+
+<h2>Recent Threads</h2>
+  {% if posts.len() != 0 %}
+    <table>
+      <tr id="bar">
+        <th>Op</th>
+        <th>Subject</th>
+        <th>Date</th>
+      </tr>
+      {% for post in posts %}
+      <tr>
+        <td id="op">
+        {% if post.email.is_some() %}
+          <a href="mailto:{{ post.email.as_ref().unwrap() }}">{{ post.op }}</a>
+        {% else %}
+          {{ post.op }}
+        {% endif %}
+        </td>
+        {% if post.subject.is_some() %}
+          <td>
+            <a href="/{{ post.board }}/{{ post.id }}" target="">{{ post.subject.as_ref().unwrap() }}</a>
+          </td>
+        {% endif %}
+        <td id="date">{{ post.created }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+  <p>There's nothing to see here yet!</p>
+  {% endif %}
+{% endblock %}

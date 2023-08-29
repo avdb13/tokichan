@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+    {% block title %}
+      {{ title }} - Tokichan
+    {% endblock %}
+    </title>
+    <link rel="stylesheet" href="/static/css/main.css" type="text/css">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body>
+    <div id="header">
+    <header>
+      <h1><a href="/">Tokichan</a></h1>
+    </header>
+    <nav>
+      <div class="nav-public">
+        <h2><a href="/">Home</a></h2>
+        <h2><a href="/.toki/recent">Recent</a></h2>
+        {% for board in base.boards %}
+        <h2><a href="/{{ board.name }}/">{{ board.name }} - {{ board.title }}</a></h2>
+        {% endfor %}
+      </div>
+      <div>
+        {% if base.authenticated %}
+          <h2><a href="/.toki/mod">Mod</a></h2>
+          <form action="/.toki/logout" method="POST" accept-charset="utf-8">
+            <button>Logout</button>
+          </form>
+        {% else %}
+          <h2><a href="/.toki/login">Login</a></h2>
+        {% endif %}
+      </div>
+    </nav>
+    </div>
+    <section>
+      {% if base.flash.is_some() %}
+        <div class="flash">
+          {{ base.flash.as_ref().unwrap() }}
+        </div>
+      {% endif %}
+    </section>
+    {% block body %}{% endblock %}
+    <footer>
+      {{ base.current_year }} - Tokichan(tm)
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+{% extends "base.layout.html" %}
+
+{% block hidden %}
+  <input type="hidden" value="{{ post.id }}" name="parent"/>
+  <input type="hidden" value="{{ board }}" name="board"/>
+{% endblock %}
+
+{% block title %}
+    Thread #{{  post.id  }}
+{% endblock %}
+
+{% block body %}
+  <div class="thread">
+
+    <div class="create">
+      {% include "create.partial.html" %}
+    </div>
+    <div class="title">
+      <span>
+        {{ post.id }}
+      </span>
+      <h2>
+        {% if post.subject.is_some() %}
+          <span id="subject">
+            {{ post.subject.as_ref().unwrap() }}
+          </span>
+        {% endif %}
+        <span id="op">
+        {% if post.email.is_some() %}
+          <a href="mailto:{{ post.email.as_ref().unwrap() }}">{{ post.op }}</a>
+        {% else %}
+          {{ post.op }}
+        {% endif %}
+        </span>
+        <span id="date">
+          {{ post.created }}
+        </span>
+      </h2>
+    </div>
+      {% if post.files.is_some() %}
+        <div class="metadata">
+        {% for file in post.files.as_ref().unwrap() %}
+          <img src="/tmp/{{ file }}" alt="/tmp/{{ file }}" height="120"/>
+        {% endfor %}
+        </div>
+      {% endif %}
+      {% if post.body.is_some() %}
+      <div class="body">
+        <p>{{ post.body.as_ref().unwrap() }}</p>
+      </div>
+      {% endif %}
+    </div>
+      {% if children.is_some() %}
+        {% for child in children.as_ref().unwrap() %}
+        <div class="thread">
+          <div class="title">
+            <h2>
+            <span>
+              {{ child.id }}
+            </span>
+              {% if child.subject.is_some() %}
+                <span id="subject">
+                  {{ child.subject.as_ref().unwrap() }}
+                </span>
+              {% endif %}
+              <span id="op">
+                {% if child.email.is_some() %}
+                  <a href="mailto:{{ child.email.as_ref().unwrap() }}">{{ child.op }}</a>
+                {% else %}
+                  {{ child.op }}
+                {% endif %}
+              </span>
+              <span id="date">{{ child.created }}</span>
+            </h2>
+          </div>
+          {% if child.files.is_some() %}
+            <div class="metadata">
+            {% for file in child.files.as_ref().unwrap() %}
+              <img src="/tmp/{{ file }}" alt="/tmp/{{ file }}" height="120"/>
+            </div>
+            {% endfor %}
+          {% endif %}
+          {% if child.body.is_some() %}
+            <div class="body">
+              <p>{{ child.body.as_ref().unwrap() }}</p>
+          </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+{% endblock %}

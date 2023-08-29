@@ -1,0 +1,64 @@
+<form action="/{{ board }}/" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+  {% block hidden %}{% endblock %}
+  {# include "error.partial.html" #}
+  <table>
+    <tr>
+      <td>
+        <label>Name:</label>
+      </td>
+      <td>
+     {%let op %}
+     {% if input.op.len() != 0 %}
+       {% let op = input.op.clone() %}
+     {% else %}
+       {% let op = "Anonymous".to_string().clone() %}
+     {% endif %}
+        <input type="text" value="{{ op }}" name="op" size="24" maxlength="100"/>
+      </td>
+    </tr>
+       <td>
+         <label>Email:</label>
+       </td>
+       <td>
+        <input type="text" value="{{ input.email }}" name="email" size="24" maxlength="100"/>
+      </td>
+    <tr>
+      <td>
+        <label>Subject:</label>
+      </td>
+      <td>
+        <input type="text" value="{{ input.subject }}" name="subject" size="24" maxlength="100"/>
+      </td>
+    </tr>
+      <td>
+        <label>Body:</label>
+      </td>
+      <td>
+        <textarea name="body" rows="5" cols="32">{{ input.body }}</textarea>
+      </td>
+    <tr>
+      <td>
+        <label>Picture:</label>
+      </td>
+      <td>
+        <input type="file" name="file1"/>
+        <input type="file" name="file2"/>
+        <input type="file" name="file3"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="submit" value="Post"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="captcha" size="24" maxlength="6"/>
+        <img src="/.toki/captcha" alt="/.toki/captcha"/>
+         {% if invalid_captcha %}
+          <h2 style="color: red;">wrong captcha</h2>
+         {% endif %}
+      </td>
+    </tr>
+  </table>
+</form>
